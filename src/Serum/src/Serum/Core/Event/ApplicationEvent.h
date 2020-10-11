@@ -5,13 +5,14 @@
 #include "Serum/pch.h"
 
 namespace Serum {
-    struct WindowResizeEvent : public Event {
+    class WindowResizeEvent : public Event {
+    public:
         WindowResizeEvent(unsigned int width, unsigned int height) : Width(width), Height(height) {}
 
-        unsigned int GetWidth() const { return Width; }
-        unsigned int GetHeight() const { return Height; }
+        uint GetWidth() { return Width; }
+        uint GetHeight() { return Height; }
 
-        std::string ToString() const override {
+        std::string ToString() override {
             std::stringstream ss;
             ss << "WindowResizeEvent: " << Width << ", " << Height;
             return ss.str();
@@ -20,7 +21,7 @@ namespace Serum {
         EVENT_CLASS_TYPE(WindowResize)
         EVENT_CLASS_CATEGORY(EventCategoryApplication)
     private:
-        unsigned int Width, Height;
+        uint Width, Height;
     };
 
     struct WindowCloseEvent : public Event {

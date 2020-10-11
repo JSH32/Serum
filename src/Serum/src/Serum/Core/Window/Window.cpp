@@ -2,7 +2,8 @@
 
 namespace Serum {
     static void GLFWErrorCallback(int error, const char* description) {
-        exit(1);
+        std::cout << description << std::endl;
+        exit(error);
     }
 
     Window::Window(const WindowProps &props) {
@@ -18,6 +19,7 @@ namespace Serum {
 
         window = glfwCreateWindow((int)props.Width, (int)props.Height, data.Title.c_str(), nullptr, nullptr);
 
+        glfwMakeContextCurrent(window);
         glfwSetWindowUserPointer(window, &data);
         SetVSync(true);
 

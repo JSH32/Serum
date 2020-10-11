@@ -10,10 +10,10 @@ namespace Serum {
         MouseMovedEvent(const float x, const float y)
                 : m_MouseX(x), m_MouseY(y) {}
 
-        float GetX() const { return m_MouseX; }
-        float GetY() const { return m_MouseY; }
+        float GetX() { return m_MouseX; }
+        float GetY() { return m_MouseY; }
 
-        std::string ToString() const override {
+        std::string ToString() override {
             std::stringstream ss;
             ss << "MouseMovedEvent: " << m_MouseX << ", " << m_MouseY;
             return ss.str();
@@ -26,12 +26,12 @@ namespace Serum {
     };
 
     struct MouseScrolledEvent : public Event {
-        MouseScrolledEvent(const float xOffset, const float yOffset) : m_XOffset(xOffset), m_YOffset(yOffset) {}
+        MouseScrolledEvent(float xOffset, float yOffset) : xOffset(xOffset), yOffset(yOffset) {}
 
-        float GetXOffset() const { return m_XOffset; }
-        float GetYOffset() const { return m_YOffset; }
+        float GetXOffset() const { return xOffset; }
+        float GetYOffset() const { return yOffset; }
 
-        std::string ToString() const override {
+        std::string ToString() override {
             std::stringstream ss;
             ss << "MouseScrolledEvent: " << GetXOffset() << ", " << GetYOffset();
             return ss.str();
@@ -40,27 +40,26 @@ namespace Serum {
         EVENT_CLASS_TYPE(MouseScrolled)
         EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
     private:
-        float m_XOffset, m_YOffset;
+        float yOffset, xOffset;
     };
 
     class MouseButtonEvent : public Event {
     public:
-        MouseCode GetMouseButton() const { return m_Button; }
+        MouseCode GetMouseButton() const { return button; }
 
         EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput | EventCategoryMouseButton)
     protected:
-        MouseButtonEvent(const MouseCode button) : m_Button(button) {}
+        explicit MouseButtonEvent(MouseCode button) : button(button) {}
 
-        MouseCode m_Button;
+        MouseCode button;
     };
 
     struct MouseButtonPressedEvent : public MouseButtonEvent {
-        MouseButtonPressedEvent(const MouseCode button)
-                : MouseButtonEvent(button) {}
+        explicit MouseButtonPressedEvent(MouseCode button) : MouseButtonEvent(button) {}
 
-        std::string ToString() const override {
+        std::string ToString() override {
             std::stringstream ss;
-            ss << "MouseButtonPressedEvent: " << m_Button;
+            ss << "MouseButtonPressedEvent: " << button;
             return ss.str();
         }
 
@@ -68,12 +67,11 @@ namespace Serum {
     };
 
     struct MouseButtonReleasedEvent : public MouseButtonEvent {
-        MouseButtonReleasedEvent(const MouseCode button)
-                : MouseButtonEvent(button) {}
+        explicit MouseButtonReleasedEvent(const MouseCode button) : MouseButtonEvent(button) {}
 
-        std::string ToString() const override {
+        std::string ToString() override {
             std::stringstream ss;
-            ss << "MouseButtonReleasedEvent: " << m_Button;
+            ss << "MouseButtonReleasedEvent: " << button;
             return ss.str();
         }
 

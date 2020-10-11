@@ -43,4 +43,3 @@ add_definitions("-DGIT_BRANCH=${GIT_BRANCH}")
 
 # glfw : window library
 target_link_libraries(serum PUBLIC glfw)
-target_include_directories(serum PUBLIC ${VENDOR_DIR}/glfw/include/GLFW)

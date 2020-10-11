@@ -1,7 +1,9 @@
 #include <Serum/Core.h>
 
 int main() {
-    Serum::Window(Serum::WindowProps("Test"));
+    auto app = Serum::Application();
+
+    app.Run();
 
     return 0;
 }

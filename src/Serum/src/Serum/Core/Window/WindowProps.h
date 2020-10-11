@@ -9,9 +9,9 @@ namespace Serum {
         unsigned int Width;
         unsigned int Height;
 
-        WindowProps(const std::string& title = "Serum Window",
+        explicit WindowProps(std::string title,
                     unsigned int width = 1280,
                     unsigned int height = 720)
-                    : Title(title), Width(width), Height(height) {}
+                    : Title(std::move(title)), Width(width), Height(height) {}
     };
 }

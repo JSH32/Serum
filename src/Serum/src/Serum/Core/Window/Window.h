@@ -1,4 +1,4 @@
-#pragma
+#pragma once
 
 #include "Serum/pch.h"
 
@@ -13,13 +13,13 @@
 namespace Serum {
     class Window {
     public:
-        Window(const WindowProps& props);
+        explicit Window(const WindowProps& props);
         ~Window();
 
         void Update();
 
-        uint GetWidth() {}
-        uint GetHeight() {}
+        uint GetWidth() { return data.Height; }
+        uint GetHeight() { return data.Width; }
 
         void SetEventCallback(const EventCallbackFn& callback) { data.EventCallback = callback; }
         void SetVSync(bool enabled);

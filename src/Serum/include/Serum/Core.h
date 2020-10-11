@@ -7,3 +7,5 @@
 
 #include "Serum/Core/Input/KeyCodes.h"
 #include "Serum/Core/Input/MouseCodes.h"
+
+#include "Serum/Core/Application/Application.h"

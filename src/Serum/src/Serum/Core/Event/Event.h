@@ -3,12 +3,12 @@
 #include <functional>
 
 #define EVENT_CLASS_TYPE(type) static EventType GetStaticType() { return EventType::type; }\
-                                EventType GetEventType() const override { return GetStaticType(); }\
-                                const char* GetName() const override { return #type; }
+                                EventType GetEventType() override { return GetStaticType(); }\
+                                const char* GetName() override { return #type; }
 
 
 
-#define EVENT_CLASS_CATEGORY(category) int GetCategoryFlags() const override { return category; }
+#define EVENT_CLASS_CATEGORY(category) int GetCategoryFlags() override { return category; }
 
 namespace Serum {
     enum class EventType {
@@ -28,15 +28,14 @@ namespace Serum {
         EventCategoryMouseButton
     };
 
-    struct Event {
+    class Event {
+    public:
         virtual ~Event() = default;
 
-        bool Handled = false;
-
-        virtual EventType GetEventType() const = 0;
-        virtual const char* GetName() const = 0;
-        virtual int GetCategoryFlags() const = 0;
-        virtual std::string ToString() const { return GetName(); }
+        virtual EventType GetEventType() = 0;
+        virtual const char* GetName() = 0;
+        virtual int GetCategoryFlags() = 0;
+        virtual std::string ToString() { return GetName(); }
 
         bool IsInCategory(EventCategory category) {
             return GetCategoryFlags() & category;
@@ -47,12 +46,12 @@ namespace Serum {
 
     class EventDispatcher {
     public:
-        EventDispatcher(Event& event) : event(event) {}
+        explicit EventDispatcher(Event& event) : event(event) {}
 
         template<typename T, typename F>
         bool Dispatch(const F& func) {
             if (event.GetEventType() == T::GetStaticType()) {
-                event.Handled = func(static_cast<T&>(event));
+                func(static_cast<T&>(event));
                 return true;
             }
             return false;
@@ -61,7 +60,7 @@ namespace Serum {
         Event& event;
     };
 
-    inline std::ostream& operator<<(std::ostream& os, const Event& e) {
+    inline std::ostream& operator<<(std::ostream& os, Event& e) {
         return os << e.ToString();
     }
 }

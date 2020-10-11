@@ -12,7 +12,7 @@ namespace Serum {
 
         EVENT_CLASS_CATEGORY(EventCategoryKeyboard | EventCategoryInput)
     protected:
-        KeyEvent(const KeyCode keycode) : keycode(keycode) {}
+        explicit KeyEvent(const KeyCode keycode) : keycode(keycode) {}
 
         KeyCode keycode;
     };
@@ -20,9 +20,9 @@ namespace Serum {
     struct KeyPressedEvent : public KeyEvent {
         KeyPressedEvent(const KeyCode keycode, const uint16_t repeatCount) : KeyEvent(keycode), repeat_count(repeatCount) {}
 
-        unsigned int GetRepeatCount() const { return repeat_count; }
+        uint GetRepeatCount() const { return repeat_count; }
 
-        std::string ToString() const override {
+        std::string ToString() override {
             std::stringstream ss;
             ss << "KeyPressedEvent: " << keycode << " (" << repeat_count << " repeats)";
             return ss.str();
@@ -30,13 +30,13 @@ namespace Serum {
 
         EVENT_CLASS_TYPE(KeyPressed)
     private:
-        unsigned int repeat_count;
+        uint repeat_count;
     };
 
     struct KeyReleasedEvent : public KeyEvent {
-        KeyReleasedEvent(const KeyCode keycode) : KeyEvent(keycode) {}
+        explicit KeyReleasedEvent(const KeyCode keycode) : KeyEvent(keycode) {}
 
-        std::string ToString() const override {
+        std::string ToString() override {
             std::stringstream ss;
             ss << "KeyReleasedEvent: " << keycode;
             return ss.str();
@@ -46,10 +46,9 @@ namespace Serum {
     };
 
     struct KeyTypedEvent : public KeyEvent {
-        KeyTypedEvent(const KeyCode keycode)
-                : KeyEvent(keycode) {}
+        explicit KeyTypedEvent(const KeyCode keycode) : KeyEvent(keycode) {}
 
-        std::string ToString() const override {
+        std::string ToString() override {
             std::stringstream ss;
             ss << "KeyTypedEvent: " << keycode;
             return ss.str();
