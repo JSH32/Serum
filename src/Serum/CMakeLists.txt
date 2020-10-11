@@ -12,8 +12,10 @@ set(CMAKE_CXX_STANDARD 17)
 file(GLOB_RECURSE SRC ${SOURCE_DIR}/*.cpp)
 
 add_library(serum SHARED ${SRC})
+target_include_directories(serum PUBLIC ${SOURCE_DIR})
 target_include_directories(serum PUBLIC ${INCLUDE_DIR})
-target_include_directories(serum PRIVATE ${SOURCE_DIR})
+
+target_precompile_headers(serum PUBLIC ${SOURCE_DIR}/Serum/pch.h)
 
 # -- SET VARIABLES --
 
@@ -40,5 +42,5 @@ add_definitions("-DGIT_BRANCH=${GIT_BRANCH}")
 # -- INITIALIZE LIBRARIES --
 
 # glfw : window library
-target_link_libraries(serum PRIVATE glfw)
-target_include_directories(serum PRIVATE ${VENDOR_DIR}/glfw/include/GLFW)
+target_link_libraries(serum PUBLIC glfw)
+target_include_directories(serum PUBLIC ${VENDOR_DIR}/glfw/include/GLFW)
