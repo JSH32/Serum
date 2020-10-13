@@ -7,6 +7,7 @@ set(INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/include)
 
 project(Serum VERSION ${VERSION} DESCRIPTION "The serum 2d game engine")
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS "-fPIC")
 
 # Get files
 file(GLOB_RECURSE SRC ${SOURCE_DIR}/*.cpp)
@@ -43,3 +44,4 @@ add_definitions("-DGIT_BRANCH=${GIT_BRANCH}")
 
 # glfw : window library
 target_link_libraries(serum PUBLIC glfw)
+target_link_libraries(serum PUBLIC bgfx)

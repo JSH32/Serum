@@ -1,9 +1,7 @@
 #include <Serum/Core.h>
 
 int main() {
-    auto app = Serum::Application();
-
-    app.Run();
+    Serum::Application().Run();
 
     return 0;
 }

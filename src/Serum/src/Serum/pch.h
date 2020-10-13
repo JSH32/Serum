@@ -13,4 +13,8 @@
 
 #include <GLFW/glfw3.h>
 
+#include <bx/bx.h>
+#include <bgfx/bgfx.h>
+#include <bgfx/platform.h>
+
 #define BIND_FN(fn) [this](auto&&... args) -> decltype(auto) { return this->fn(std::forward<decltype(args)>(args)...); }
