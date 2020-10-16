@@ -7,12 +7,11 @@ set(INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/include)
 
 project(Serum VERSION ${VERSION} DESCRIPTION "The serum 2d game engine")
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS "-fPIC")
 
 # Get files
 file(GLOB_RECURSE SRC ${SOURCE_DIR}/*.cpp)
 
-add_library(serum SHARED ${SRC})
+add_library(serum ${SRC})
 target_include_directories(serum PUBLIC ${SOURCE_DIR})
 target_include_directories(serum PUBLIC ${INCLUDE_DIR})
 
@@ -43,5 +42,7 @@ add_definitions("-DGIT_BRANCH=${GIT_BRANCH}")
 # -- INITIALIZE LIBRARIES --
 
 # glfw : window library
+target_link_libraries(serum PUBLIC glad)
 target_link_libraries(serum PUBLIC glfw)
-target_link_libraries(serum PUBLIC bgfx)
+target_link_libraries(serum PUBLIC glm)
+target_link_libraries(serum PUBLIC imgui)

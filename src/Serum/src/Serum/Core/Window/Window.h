@@ -23,7 +23,7 @@ namespace Serum {
 
         void SetEventCallback(const EventCallbackFn& callback) { data.EventCallback = callback; }
         void SetVSync(bool enabled);
-        bool IsVSync();
+        bool IsVSync() const;
 
         void SetCallbacks();
 

@@ -10,18 +10,20 @@ set(VENDOR_DIR ${CMAKE_CURRENT_LIST_DIR}/vendor)
 set(LIBRARY_BUILD_DIR build)
 
 # Dependency build targets
-# glfw : window lib
+# glfw
 add_subdirectory(${VENDOR_DIR}/glfw ${LIBRARY_BUILD_DIR}/glfw)
 
-# bgfx : graphics API
-set(BX_DIR ${VENDOR_DIR}/bx)
-set(BIMG_DIR ${VENDOR_DIR}/bimg)
-set(BGFX_DIR ${VENDOR_DIR}/bgfx)
+# glad
+add_subdirectory(${VENDOR_DIR}/glad)
 
-include(extra/cmake/bgfx/shared.cmake)
-include(extra/cmake/bgfx/bx.cmake)
-include(extra/cmake/bgfx/bimg.cmake)
-include(extra/cmake/bgfx/bgfx.cmake)
+# imgui
+file(GLOB IMGUI_SRC ${VENDOR_DIR}/imgui/*.cpp ${VENDOR_DIR}/imgui_impl/*.cpp)
+add_library(imgui ${IMGUI_SRC})
+target_include_directories(imgui PUBLIC ${VENDOR_DIR}/imgui ${VENDOR_DIR}/imgui_impl)
+target_link_libraries(imgui PRIVATE glad)
+
+# glm
+add_subdirectory(${VENDOR_DIR}/glm)
 
 # Build targets for this serum
 add_subdirectory(src/Serum)

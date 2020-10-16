@@ -5,7 +5,7 @@
 #include "Serum/Core/Event/ApplicationEvent.h"
 
 namespace Serum {
-    class Application {
+class Application {
     public:
         explicit Application(const std::string& name = "Serum");
         virtual ~Application() = default;

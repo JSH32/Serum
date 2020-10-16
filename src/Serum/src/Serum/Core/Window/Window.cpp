@@ -1,8 +1,5 @@
 #include "Window.h"
 
-#define GLFW_EXPOSE_NATIVE_X11
-#include <GLFW/glfw3native.h>
-
 namespace Serum {
     static void GLFWErrorCallback(int error, const char* description) {
         std::cout << description << std::endl;
@@ -18,36 +15,20 @@ namespace Serum {
         if (!glfwInit())
             exit(1);
 
-        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         window = glfwCreateWindow((int)props.Width, (int)props.Height, data.Title.c_str(), nullptr, nullptr);
         if (!window)
             exit(1);
 
-        bgfx::renderFrame();
-
-        bgfx::Init init;
-        init.platformData.ndt = glfwGetX11Display();
-        init.platformData.nwh = (void*)(uintptr_t)glfwGetX11Window(window);
-
-        init.resolution.width = (uint32_t)data.Width;
-        init.resolution.height = (uint32_t)data.Height;
-        init.resolution.reset = BGFX_RESET_VSYNC;
-        if (!bgfx::init(init))
-            exit(1);
-
-        const bgfx::ViewId kClearView = 0;
-        bgfx::setViewClear(kClearView, BGFX_CLEAR_COLOR);
-        bgfx::setViewRect(kClearView, 0, 0, bgfx::BackbufferRatio::Equal);
+        glfwMakeContextCurrent(window);
+        gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
         glfwSetWindowUserPointer(window, &data);
+        SetVSync(true);
 
         SetCallbacks();
-
-        bgfx::setDebug(BGFX_DEBUG_TEXT);
     }
 
     Window::~Window() {
-        bgfx::shutdown();
         glfwDestroyWindow(window);
         glfwTerminate();
     }
@@ -55,16 +36,7 @@ namespace Serum {
     void Window::Update() {
         glfwPollEvents();
 
-        bgfx::reset(this->data.Width, this->data.Height, BGFX_RESET_VSYNC);
-        bgfx::setViewRect(0, 0, 0, bgfx::BackbufferRatio::Equal);
-
-        bgfx::touch(0);
-
-        bgfx::dbgTextClear();
-
-        bgfx::dbgTextPrintf(1, 1, 0x0f, "Hello World!");
-
-        bgfx::frame();
+        glfwSwapBuffers(window);
     }
 
     void Window::SetVSync(bool enabled) {
@@ -76,7 +48,7 @@ namespace Serum {
         data.VSync = enabled;
     }
 
-    bool Window::IsVSync() {
+    bool Window::IsVSync() const {
         return data.VSync;
     }
 
