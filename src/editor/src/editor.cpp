@@ -2,12 +2,12 @@
 #include "imgui-SFML.h"
 #include "imgui.h"
 #include "entity.h"
+#include "panels/inspector.h"
+#include "components/shape.h"
 
 namespace Serum2D::Editor {
     Editor::Editor(sf::RenderWindow &window)
-        : window(window),
-            scene(Serum2D::Core::Scene("Test Scene")),
-            sceneHierarchyPanel(scene, sceneViewPanel) {
+        : window(window), scene(Serum2D::Core::Scene("Test Scene")) {
         (void)ImGui::SFML::Init(window);
 
         ImGuiIO& io = ImGui::GetIO(); (void)io;
@@ -68,7 +68,13 @@ namespace Serum2D::Editor {
         style.Colors[ImGuiCol_ModalWindowDimBg]      = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
         style.GrabRounding                           = style.FrameRounding = 2.3f;
 
-        scene.createEntity("mogus");
+        auto entity = scene.createEntity("mogus");
+        entity.addComponent<Core::Components::ShapeComponent>();
+
+        panels.push_back(std::make_unique<SceneViewPanel>(&scene));
+        panels.push_back(std::make_unique<SceneHierarchyPanel>(scene, dynamic_cast<SceneViewPanel*>(panels.back().get())));
+        panels.push_back(std::make_unique<InspectorPanel>(scene, dynamic_cast<SceneHierarchyPanel*>(panels.back().get())));
+
 //        auto gb = Core::Entity("Mogus");
 //        gb.childObjects.emplace_back("Mogufs");
 //        scene.gameObjects.emplace_back(gb);
@@ -103,15 +109,17 @@ namespace Serum2D::Editor {
             }
             ImGui::EndMenuBar();
         }
-        ImGui::End(); // End dockspace after menu bar
+        ImGui::End(); // End dock space after menu bar
 
-        sceneViewPanel.update();
-        sceneHierarchyPanel.update();
+        for (auto& panel : panels)
+            panel->OnUpdate();
     }
 
     void Editor::onEvent(sf::Event event) {
-        sceneViewPanel.processEvent(event);
-        sceneHierarchyPanel.processEvent(event);
+        for (auto& panel : panels) {
+            if (panel->ReceiveEvents())
+                panel->OnEvent(event);
+        }
     }
 
     void Editor::startDockSpace() {

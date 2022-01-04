@@ -9,7 +9,7 @@ file(GLOB_RECURSE SRC
         "${VENDOR_DIR}/ImGuizmo"
         )
 
-add_executable(editor ${SRC} src/panels/inspector.cpp src/panels/inspector.h src/panels/editorpanel.cpp src/panels/editorpanel.h)
+add_executable(editor ${SRC} src/panels/inspector.cpp src/panels/inspector.h src/panels/editorpanel.h)
 target_include_directories(editor PRIVATE ${SOURCE_DIR} ${VENDOR_DIR}/ImGuizmo)
 
 target_link_libraries(editor PRIVATE serum)

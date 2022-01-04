@@ -18,9 +18,8 @@ namespace Serum2D::Editor {
         static void startDockSpace();
 
         Core::Scene scene;
-        SceneViewPanel sceneViewPanel;
-        SceneHierarchyPanel sceneHierarchyPanel;
 
+        std::vector<std::unique_ptr<EditorPanel>> panels;
         sf::RenderWindow& window;
         sf::Clock deltaTime;
     };

@@ -17,6 +17,8 @@ namespace Serum2D::Core {
         Entity createEntity(const std::string& entityName = std::string());
         void destroyEntity(Entity entity);
 
+        void Render(sf::RenderTarget& target);
+
         std::string name;
         entt::registry registry;
     };

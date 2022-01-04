@@ -7,23 +7,20 @@
 #include "sceneview.h"
 
 namespace Serum2D::Editor {
-    class SceneHierarchyPanel {
+    class SceneHierarchyPanel : public EditorPanel {
     public:
-        explicit SceneHierarchyPanel(Core::Scene& scene, SceneViewPanel& sceneViewPanel)
+        SceneHierarchyPanel(Core::Scene& scene, SceneViewPanel* sceneViewPanel)
             : scene(scene), sceneViewPanel(sceneViewPanel) {};
-        void update();
-        void processEvent(sf::Event event);
+//        void update();
+//        void processEvent(sf::Event event);
+
+        void OnEvent(sf::Event event) override;
+        void OnUpdate() override;
 
         Core::Scene& scene;
-
         Core::Entity selectedObject;
     private:
-        static void vector2fEditor(const std::string& label, sf::Vector2f& vec);
         void drawEntity(Core::Entity entity);
-        bool focus = false;
-        SceneViewPanel& sceneViewPanel;
-
-        template<typename T, typename Function>
-        static void DrawComponent(const std::string &name, Core::Entity entity, Function uiFunction);
+        SceneViewPanel* sceneViewPanel;
     };
 }

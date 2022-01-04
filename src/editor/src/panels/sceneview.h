@@ -6,23 +6,23 @@
 #include "SFML/Graphics/RenderTexture.hpp"
 #include "SFML/Graphics/Sprite.hpp"
 #include "imgui.h"
+#include "editorpanel.h"
+#include "scene.h"
 #include <imgui-SFML.h>
 
 namespace Serum2D::Editor {
     class SceneHierarchyPanel;
 
-    class SceneViewPanel {
+    class SceneViewPanel : public EditorPanel {
     public:
-        SceneViewPanel();
+        explicit SceneViewPanel(Core::Scene* scene);
 
-        void processEvent(sf::Event event);
-        void update();
+        void OnEvent(sf::Event event) override;
+        void OnUpdate() override;
     private:
         void drawGridLines();
 
         float zoom = 1; // Zoom
-
-        bool focus = false; // Is pane in focus
         bool moving = false; // Is currently moving
 
         sf::Vector2f oldPos;
@@ -31,6 +31,7 @@ namespace Serum2D::Editor {
         sf::View sceneView;
 
         sf::RectangleShape gridLineY, gridLineX;
+        Core::Scene* scene;
 
         friend SceneHierarchyPanel;
     };
