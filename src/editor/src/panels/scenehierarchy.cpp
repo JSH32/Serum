@@ -1,10 +1,9 @@
-#include <cstring>
 #include "scenehierarchy.h"
 #include "entity.h"
 #include "components/tag.h"
 #include "SFML/Graphics/Transformable.hpp"
-#include "imgui_internal.h"
 #include "SFML/Window/Event.hpp"
+#include "icons.h"
 
 static const ImGuiTreeNodeFlags TREENODE_FLAGS =
         ImGuiTreeNodeFlags_DefaultOpen |
@@ -20,7 +19,7 @@ namespace Serum2D::Editor {
         if (entity == selectedObject)
             treeNode = TREENODE_FLAGS | ImGuiTreeNodeFlags_Selected;
 
-        if (ImGui::TreeNodeEx((void *) (uint64_t) (uint32_t) entity, treeNode, "%s", tag.tag.c_str())) {
+        if (ImGui::TreeNodeEx((void *) (uint64_t) (uint32_t) entity, treeNode, ICON_FA_CUBE " %s", tag.tag.c_str())) {
             if (ImGui::IsItemClicked(0)) {
                 selectedObject = entity;
             }
@@ -49,7 +48,7 @@ namespace Serum2D::Editor {
     }
 
     void SceneHierarchyPanel::OnUpdate() {
-        ImGui::Begin("Hierarchy");
+        ImGui::Begin(ICON_FA_LIST_UL " Hierarchy");
         scene.registry.each([&](auto entityID) {
             Core::Entity entity{ entityID , &scene };
             drawEntity(entity);
@@ -65,43 +64,5 @@ namespace Serum2D::Editor {
         ShouldReceiveEvents(ImGui::IsWindowFocused());
 
         ImGui::End();
-
-//
-//        ImGui::Begin("Properties");
-//        if (selectedObject) {
-//            if (selectedObject.hasComponent<Core::Components::TagComponent>()) {
-//                auto& tag = selectedObject.getComponent<Core::Components::TagComponent>().tag;
-//
-//                char buffer[256];
-//                memset(buffer, 0, sizeof(buffer));
-//                std::strncpy(buffer, tag.c_str(), sizeof(buffer));
-//                if (ImGui::InputText("##Name", buffer, sizeof(buffer)))
-//                    tag = std::string(buffer);
-//            }
-//
-//            if (selectedObject.hasComponent<sf::Transformable>()) {
-//                DrawComponent<sf::Transformable>("Transform", selectedObject, [](auto& transform) {
-//                    sf::Vector2f position = transform.getPosition();
-//                    vector2fEditor("Position", position);
-//                    transform.setPosition(position);
-//
-//                    sf::Vector2f scale = transform.getScale();
-//                    vector2fEditor("Scale", scale);
-//                    transform.setScale(scale);
-//
-//                    float rotation = transform.getRotation();
-//
-//                    ImGui::Columns(2);
-//                    ImGui::SetColumnWidth(0, 100);
-//                    ImGui::Text("Rotation");
-//                    ImGui::NextColumn();
-//
-//                    ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth());
-//                    if (ImGui::DragFloat("##Rotation", &rotation, 0.1f, 0.0f, 0.0f, "%.2f"))
-//                        transform.setRotation(rotation);
-//                    ImGui::PopItemWidth();
-//                });
-//            }
-//        }
     }
 }

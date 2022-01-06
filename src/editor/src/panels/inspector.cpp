@@ -1,18 +1,15 @@
 #include <cstring>
-#include <iostream>
 #include "inspector.h"
 #include "imgui_internal.h"
 #include "components/tag.h"
 #include "components/shape.h"
+#include "imgui_utils.h"
+
+#include "icons.h"
 
 namespace Serum2D::Editor {
-
-    void InspectorPanel::OnEvent(sf::Event event) {
-
-    }
-
     void InspectorPanel::OnUpdate() {
-        ImGui::Begin("Inspector");
+        ImGui::Begin(ICON_FA_INFO_CIRCLE " Inspector");
         if (sceneHierarchy->selectedObject) {
             if (sceneHierarchy->selectedObject.hasComponent<Core::Components::TagComponent>()) {
                 auto& tag = sceneHierarchy->selectedObject.getComponent<Core::Components::TagComponent>().tag;
@@ -43,21 +40,120 @@ namespace Serum2D::Editor {
                 ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth());
                 if (ImGui::DragFloat("##Rotation", &rotation, 0.1f, 0.0f, 0.0f, "%.2f"))
                     transform.setRotation(rotation);
-                ImGui::PopItemWidth();
                 ImGui::EndColumns();
             });
 
             DrawComponent<Core::Components::ShapeComponent>("Shape Renderer", sceneHierarchy->selectedObject, false, [](Core::Components::ShapeComponent& shape) {
-                static float color[4] = {
-                        static_cast<float>(shape.GetFillColor().r),
-                        static_cast<float>(shape.GetFillColor().g),
-                        static_cast<float>(shape.GetFillColor().b),
-                        static_cast<float>(shape.GetFillColor().a)};
+                static const char* shapeTypeStrings[] = { "Rectangle", "Circle" };
+                const char* current;
 
-                std::cout << color[0] << std::endl;
-                if (ImGui::ColorEdit4("Color", color, ImGuiColorEditFlags_InputRGB | ImGuiColorEditFlags_DisplayRGB))
-                    shape.SetFillColor(sf::Color((int)color[0], (int)color[1], (int)color[2], 255));
+                if (shape.shapeType == Core::Components::ShapeType::Rectangle)
+                    current = shapeTypeStrings[0];
+                else if (shape.shapeType == Core::Components::ShapeType::Circle)
+                    current = shapeTypeStrings[1];
+
+                TwoColumnBegin("Shape type", 110);
+                if (ImGui::BeginCombo("##Type", current)) {
+                    if (ImGui::Selectable(shapeTypeStrings[0], shape.shapeType == Core::Components::ShapeType::Rectangle))
+                        shape.SetShape(Core::Components::ShapeType::Rectangle);
+                    if (ImGui::Selectable(shapeTypeStrings[1], shape.shapeType == Core::Components::ShapeType::Circle))
+                        shape.SetShape(Core::Components::ShapeType::Circle);
+                    ImGui::EndCombo();
+                }
+                ImGui::EndColumns();
+
+                float color[4] = {
+                    static_cast<float>(shape.shape->getFillColor().r) / 255.f,
+                    static_cast<float>(shape.shape->getFillColor().g) / 255.f,
+                    static_cast<float>(shape.shape->getFillColor().b) / 255.f,
+                    static_cast<float>(shape.shape->getFillColor().a) / 255.f
+                };
+
+                TwoColumnBegin("Color", 110);
+                if (ImGui::ColorEdit4("##Color", color))
+                    shape.shape->setFillColor(sf::Color(
+                            (int)(color[0] * 255.f),
+                            (int)(color[1] * 255.f),
+                            (int)(color[2] * 255.f),
+                            (int)(color[3] * 255.f)));
+                ImGui::EndColumns();
+
+                TwoColumnBegin("Outline width", 110);
+                float outlineThickness = shape.shape->getOutlineThickness();
+                if (ImGui::DragFloat("##OutlineWidth", &outlineThickness, 0.1f, 0.0f, 0.0f, "%.2f"))
+                    shape.shape->setOutlineThickness(outlineThickness);
+                ImGui::EndColumns();
+
+                float outlineColor[4] = {
+                        static_cast<float>(shape.shape->getOutlineColor().r) / 255.f,
+                        static_cast<float>(shape.shape->getOutlineColor().g) / 255.f,
+                        static_cast<float>(shape.shape->getOutlineColor().b) / 255.f,
+                        static_cast<float>(shape.shape->getOutlineColor().a) / 255.f
+                };
+
+                TwoColumnBegin("Outline color", 110);
+                if (ImGui::ColorEdit4("##OutlineColor", outlineColor))
+                    shape.shape->setOutlineColor(sf::Color(
+                            (int)(outlineColor[0] * 255.f),
+                            (int)(outlineColor[1] * 255.f),
+                            (int)(outlineColor[2] * 255.f),
+                            (int)(outlineColor[3] * 255.f)));
+                ImGui::EndColumns();
+
+                // Shape specific options
+                if (shape.shapeType == Core::Components::ShapeType::Rectangle) {
+                    if (ImGui::TreeNodeEx("Rectangle properties", ImGuiTreeNodeFlags_DefaultOpen)) {
+                        auto* rect = dynamic_cast<sf::RectangleShape*>(shape.shape.get());
+                        sf::Vector2f size = rect->getSize();
+                        if (Vector2fEditor("Size", size, 70)) {
+                            rect->setSize(size);
+                            rect->setOrigin(sf::Vector2f(size.x / 2, size.y / 2));
+                        }
+                        ImGui::TreePop();
+                    }
+                } else if (shape.shapeType == Core::Components::ShapeType::Circle) {
+                    if (ImGui::TreeNodeEx("Circle properties", ImGuiTreeNodeFlags_DefaultOpen)) {
+                        auto* circle = dynamic_cast<sf::CircleShape*>(shape.shape.get());
+                        float radius = circle->getRadius();
+
+                        TwoColumnBegin("Radius", 70);
+                        if (ImGui::DragFloat("##Radius", &radius, 0.1f, 0.0f, 0.0f, "%.2f")) {
+                            circle->setOrigin(sf::Vector2f(radius, radius));
+                            circle->setRadius(radius);
+                        }
+                        ImGui::EndColumns();
+
+                        TwoColumnBegin("Points", 70);
+                        int pointCount = (int)circle->getPointCount();
+                        if (ImGui::DragInt("##Points", &pointCount, 1.0f, 3, INT_MAX, "%d", ImGuiSliderFlags_AlwaysClamp))
+                            circle->setPointCount(pointCount);
+                        ImGui::EndColumns();
+
+                        ImGui::TreePop();
+                    }
+                }
             });
+
+            ImGui::Separator();
+            if (ImGui::Button(ICON_FA_PLUS_SQUARE_O " Add Component", ImVec2(ImGui::GetContentRegionAvailWidth(), 25)))
+                ImGui::OpenPopup("AddComponent");
+
+            if (ImGui::BeginPopup("AddComponent")) {
+                bool hadShapeComponent = false;
+                if (sceneHierarchy->selectedObject.hasComponent<Core::Components::ShapeComponent>()) {
+                    ImGui::BeginDisabled();
+                    hadShapeComponent = true;
+                }
+
+                if (ImGui::MenuItem("Shape renderer"))
+                    sceneHierarchy->selectedObject.addComponent<Core::Components::ShapeComponent>(Core::Components::ShapeType::Rectangle);
+
+                if (hadShapeComponent)
+                    ImGui::EndDisabled();
+
+                ImGui::EndPopup();
+            }
+//            ImGui::PopItemWidth();
         }
         ImGui::End();
     }
@@ -80,80 +176,89 @@ namespace Serum2D::Editor {
             ImGui::Separator();
             bool open = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), treeNodeFlags, "%s", name.c_str());
             ImGui::PopStyleVar();
-
             ImGui::SameLine(contentRegionAvailable.x - lineHeight * 0.5f);
-            if (ImGui::Button("+", ImVec2{ lineHeight, lineHeight })) {
-                ImGui::OpenPopup("ComponentSettings");
-            }
 
-//            bool removeComponent = false;
-//            if (ImGui::BeginPopup("ComponentSettings")) {
-//                if (ImGui::MenuItem("Remove component"))
-//                    removeComponent = true;
-//
-//                ImGui::EndPopup();
-//            }
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0));
+            ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0, 0, 0, 0));
+            if (ImGui::Button(ICON_FA_COG, ImVec2{ lineHeight, lineHeight }))
+                ImGui::OpenPopup("ComponentSettings");
+            ImGui::PopStyleColor(3);
+
+            bool removeComponent = false;
+            if (ImGui::BeginPopup("ComponentSettings")) {
+                if (ImGui::MenuItem("Remove component"))
+                    removeComponent = true;
+
+                ImGui::EndPopup();
+            }
 
             if (open) {
                 fn(component);
                 ImGui::TreePop();
             }
-//
-//            if (removeComponent)
-//                entity.removeComponent<T>();
+
+            if (removeComponent)
+                entity.removeComponent<T>();
         }
     }
 
-    void InspectorPanel::Vector2fEditor(const std::string& label, sf::Vector2f& vec) {
-        ImGuiIO& io = ImGui::GetIO();
-        auto boldFont = io.Fonts->Fonts[0];
-        ImGui::PushID(label.c_str());
+    bool InspectorPanel::Vector2fEditor(const std::string& label, sf::Vector2f& vec, float labelWidth) {
+        bool changed = false;
 
-        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0);
+        ImGui::PushID(label.c_str());
 
         // Render label name in front of values
         ImGui::Columns(2);
-        ImGui::SetColumnWidth(0, 100);
+        ImGui::SetColumnWidth(0, labelWidth);
         ImGui::Text("%s", label.c_str());
         ImGui::NextColumn();
 
-        ImGui::PushMultiItemsWidths(2, ImGui::GetContentRegionAvailWidth() - 25);
-        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
-
-        float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
-        ImVec2 buttonSize = { lineHeight + 3.0f, lineHeight };
+        // For some reason GetContentRegionAvailWidth goes over the actual available content width by about 33
+        ImGui::PushMultiItemsWidths(2, ImGui::GetContentRegionAvailWidth() - 33);
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 2, 5 });
 
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.9f, 0.2f, 0.2f, 1.0f });
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
-        ImGui::PushFont(boldFont);
-        if (ImGui::Button("X"))
+        ImGui::SetNextItemWidth(7);
+        if (ImGui::Button("X")) {
             vec.x = 0.0f;
-        ImGui::PopFont();
+            changed = true;
+        }
         ImGui::PopStyleColor(3);
-
         ImGui::SameLine();
-        ImGui::DragFloat("##X", &vec.x, 0.1f, 0.0f, 0.0f, "%.2f");
+        if (ImGui::DragFloat("##X", &vec.x, 0.1f, 0.0f, 0.0f, "%.2f"))
+            changed = true;
         ImGui::PopItemWidth();
         ImGui::SameLine();
 
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.2f, 0.7f, 0.2f, 1.0f });
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.3f, 0.8f, 0.3f, 1.0f });
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.2f, 0.7f, 0.2f, 1.0f });
-        ImGui::PushFont(boldFont);
-        if (ImGui::Button("Y"))
+        ImGui::SetNextItemWidth(7);
+        if (ImGui::Button("Y")) {
             vec.y = 0.0f;
-        ImGui::PopFont();
+            changed = true;
+        }
         ImGui::PopStyleColor(3);
 
         ImGui::SameLine();
-        ImGui::DragFloat("##Y", &vec.y, 0.1f, 0.0f, 0.0f, "%.2f");
+        if (ImGui::DragFloat("##Y", &vec.y, 0.1f, 0.0f, 0.0f, "%.2f"))
+            changed = true;
         ImGui::PopItemWidth();
-
-        ImGui::PopStyleVar(2);
-
+        ImGui::PopStyleVar();
         ImGui::EndColumns();
-
         ImGui::PopID();
+
+        return changed;
+    }
+
+    void InspectorPanel::TwoColumnBegin(const std::string_view& label, float labelWidth) {
+        ImGui::Columns(2);
+        ImGui::SetColumnWidth(0, labelWidth);
+        ImGui::Text("%s", label.data());
+        ImGui::NextColumn();
+        ImGui::SetNextItemWidth(ImGui::GetContentRegionAvailWidth());
     }
 }

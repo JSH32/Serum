@@ -1,47 +1,44 @@
-#include <iostream>
 #include "shape.h"
 #include "SFML/Graphics/RectangleShape.hpp"
 #include "SFML/Graphics/CircleShape.hpp"
 
 namespace Serum2D::Core::Components {
-    ShapeComponent::ShapeComponent() {
-        SetShape(ShapeType::Circle);
-    }
-
-    void ShapeComponent::SetShape(ShapeType newShapeType) {
-        shapeType = newShapeType;
-        std::unique_ptr<sf::Shape> newShape = nullptr;
-        switch (newShapeType) {
-            case ShapeType::Rectangle:
-                newShape = std::make_unique<sf::RectangleShape>();
-                ((sf::RectangleShape*)newShape.get())->setSize(sf::Vector2f(1, 1));
-                break;
-            case ShapeType::Circle:
-                newShape = std::make_unique<sf::CircleShape>();
-                ((sf::CircleShape*)newShape.get())->setRadius(1);
-                break;
-        }
-
-        if (shape != nullptr) {
-            newShape->setFillColor(shape->getFillColor());
-            newShape->setOutlineColor(shape->getOutlineColor());
-            newShape->setOutlineThickness(shape->getOutlineThickness());
-        } else {
-            newShape->setFillColor(sf::Color::Red);
-        }
-
-        shape = std::move(newShape);
+    ShapeComponent::ShapeComponent(ShapeType shapeType) : shapeType(shapeType) {
+        SetShape(shapeType);
     }
 
     void ShapeComponent::draw(sf::RenderTarget &target, sf::RenderStates states) const {
         target.draw(*shape, states);
     }
 
-    sf::Color ShapeComponent::GetFillColor() {
-        return shape->getFillColor();
-    }
+    void ShapeComponent::SetShape(ShapeType newShapeType) {
+        shapeType = newShapeType;
+        std::unique_ptr<sf::Shape> newShape = nullptr;
 
-    void ShapeComponent::SetFillColor(sf::Color color) {
-        shape->setFillColor(color);
+        switch (shapeType) {
+            case ShapeType::Rectangle: {
+                auto rectShape = std::make_unique<sf::RectangleShape>();
+                rectShape->setSize(sf::Vector2f(50, 50));
+                rectShape->setOrigin(sf::Vector2f(50.f / 2, 50.f / 2));
+                newShape = std::move(rectShape);
+                break;
+            }
+            case ShapeType::Circle: {
+                auto circleShape = std::make_unique<sf::CircleShape>();
+                circleShape->setRadius(25);
+                circleShape->setOrigin(sf::Vector2f(circleShape->getRadius(), circleShape->getRadius()));
+                newShape = std::move(circleShape);
+                break;
+            }
+        }
+
+        // Shape already existed before, move over properties
+        if (shape != nullptr) {
+            newShape->setOutlineColor(shape->getOutlineColor());
+            newShape->setFillColor(shape->getFillColor());
+            newShape->setRotation(shape->getRotation());
+        }
+
+        shape = std::move(newShape);
     }
 }

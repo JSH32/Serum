@@ -4,6 +4,8 @@
 #include "entity.h"
 #include "panels/inspector.h"
 #include "components/shape.h"
+#include "resources.h"
+#include "icons.h"
 
 namespace Serum2D::Editor {
     Editor::Editor(sf::RenderWindow &window)
@@ -87,10 +89,6 @@ namespace Serum2D::Editor {
         panels.push_back(std::make_unique<SceneViewPanel>(&scene));
         panels.push_back(std::make_unique<SceneHierarchyPanel>(scene, dynamic_cast<SceneViewPanel*>(panels.back().get())));
         panels.push_back(std::make_unique<InspectorPanel>(scene, dynamic_cast<SceneHierarchyPanel*>(panels.back().get())));
-
-//        auto gb = Core::Entity("Mogus");
-//        gb.childObjects.emplace_back("Mogufs");
-//        scene.gameObjects.emplace_back(gb);
     }
 
     void Editor::run() {
