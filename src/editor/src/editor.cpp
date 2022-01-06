@@ -84,7 +84,11 @@ namespace Serum2D::Editor {
         while (window.isOpen()) {
             sf::Event event{};
             while (window.pollEvent(event)) {
-                if (event.type == sf::Event::Closed) window.close();
+                if (event.type == sf::Event::Closed) {
+                    window.close();
+                    S2D_CORE_INFO("Closing Serum2D editor. Bye bye");
+                    return;
+                }
 
                 ImGui::SFML::ProcessEvent(window, event);
                 onEvent(event);

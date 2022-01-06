@@ -13,6 +13,9 @@ add_subdirectory(${VENDOR_DIR}/SFML)
 # entt
 add_subdirectory(${VENDOR_DIR}/entt)
 
+# spdlog
+add_subdirectory(${VENDOR_DIR}/spdlog)
+
 # imgui
 set(IMGUI_SFML_FIND_SFML OFF) # sfml already imported, no need to use find_package
 set(IMGUI_DIR ${VENDOR_DIR}/imgui)

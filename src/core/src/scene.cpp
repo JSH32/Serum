@@ -22,8 +22,7 @@ namespace Serum2D::Core {
             Entity entity = { entityID, this };
 
             if (!entity.hasComponent<sf::Transformable>()) {
-                // TODO: Assert/log an error here. All components should have a transform
-
+                // TODO: Assert/log an error on Update when update is built. All components should have a transform
                 return;
             }
 

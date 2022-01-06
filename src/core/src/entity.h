@@ -31,7 +31,7 @@ namespace Serum2D::Core {
 
         template<typename T>
         void removeComponent() {
-            auto& component = scene->registry.remove<T>(entityHandle);
+            scene->registry.remove<T>(entityHandle);
         }
 
         explicit operator bool() const { return entityHandle != entt::null; }
