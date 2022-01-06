@@ -13,3 +13,11 @@ add_executable(editor ${SRC} src/panels/inspector.cpp src/panels/inspector.h src
 target_include_directories(editor PRIVATE ${SOURCE_DIR} ${VENDOR_DIR}/ImGuizmo)
 
 target_link_libraries(editor PRIVATE serum)
+
+# CmakeRC
+include(${VENDOR_DIR}/cmrc/CMakeRC.cmake)
+
+set(RESOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/resources)
+file(GLOB_RECURSE RESOURCES ${RESOURCE_DIR}/*)
+cmrc_add_resource_library(resources NAMESPACE resources WHENCE ${RESOURCE_DIR} ${RESOURCES})
+target_link_libraries(editor PRIVATE resources)

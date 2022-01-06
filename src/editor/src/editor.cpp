@@ -68,8 +68,21 @@ namespace Serum2D::Editor {
         style.Colors[ImGuiCol_ModalWindowDimBg]      = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
         style.GrabRounding                           = style.FrameRounding = 2.3f;
 
-        auto entity = scene.createEntity("mogus");
-        entity.addComponent<Core::Components::ShapeComponent>();
+        io.Fonts->AddFontDefault();
+
+        auto droidSansFile = cmrc::resources::get_filesystem().open("DroidSans.ttf");
+        auto iconFontFile = cmrc::resources::get_filesystem().open("fontawesome-webfont.ttf");
+
+        static const ImWchar iconRanges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
+        ImFontConfig fontConfig;
+        fontConfig.PixelSnapH = true;
+
+        io.FontDefault = io.Fonts->AddFontFromMemoryTTF(GetFileAsBuffer(droidSansFile), (int)droidSansFile.size(), 16.f, &fontConfig);
+
+        fontConfig.MergeMode = true;
+        io.Fonts->AddFontFromMemoryTTF(GetFileAsBuffer(iconFontFile), (int)iconFontFile.size(), 14.f, &fontConfig, iconRanges);
+        io.Fonts->Build();
+        ImGui::SFML::UpdateFontTexture();
 
         panels.push_back(std::make_unique<SceneViewPanel>(&scene));
         panels.push_back(std::make_unique<SceneHierarchyPanel>(scene, dynamic_cast<SceneViewPanel*>(panels.back().get())));

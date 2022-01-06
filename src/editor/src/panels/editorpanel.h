@@ -5,7 +5,7 @@
 namespace Serum2D::Editor {
     class EditorPanel {
     public:
-        virtual void OnEvent(sf::Event event) = 0;
+        virtual void OnEvent(sf::Event event) {};
         virtual void OnUpdate() = 0;
 
         [[nodiscard]] bool ReceiveEvents() const { return receiveEvents; }

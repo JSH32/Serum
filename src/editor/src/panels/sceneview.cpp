@@ -1,5 +1,7 @@
+#include <iostream>
 #include "sceneview.h"
 #include "SFML/Graphics/CircleShape.hpp"
+#include "icons.h"
 
 namespace Serum2D::Editor {
     SceneViewPanel::SceneViewPanel(Core::Scene* scene) : scene(scene) {
@@ -20,6 +22,23 @@ namespace Serum2D::Editor {
     }
 
     void SceneViewPanel::OnEvent(sf::Event event) {
+//        else if (event.mouseButton.button == 0) {
+//            auto pos = renderTexture.mapPixelToCoords(sf::Vector2i(event.mouseButton.x, -event.mouseButton.y));
+//            sf::RectangleShape r(sf::Vector2f(30, 30));
+//            r.setPosition(pos);
+//            renderTexture.draw(r);
+//            std::cout << "hi" << std::endl;
+//        }
+//        if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+//            auto pos = renderTexture.mapPixelToCoords(sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
+//            std::cout << pos.x << std::endl;
+//            std::cout << pos.y << std::endl;
+//            sf::RectangleShape r(sf::Vector2f(30, 30));
+//            r.setPosition(pos);
+//            r.setFillColor(sf::Color::Red);
+//            renderTexture.draw(r);
+//        }
+
         if (event.type == sf::Event::MouseButtonPressed) {
             if (event.mouseButton.button == 1) {
                 moving = true;
@@ -56,12 +75,8 @@ namespace Serum2D::Editor {
         drawGridLines();
         scene->Render(renderTexture);
 
-//        sf::CircleShape shape(5);
-//        shape.setFillColor(sf::Color::Red);
-//        renderTexture.draw(shape);
-
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-        ImGui::Begin("Scene view");
+        ImGui::Begin(ICON_FA_VIDEO_CAMERA " Scene view");
 
         float windowWidth = ImGui::GetContentRegionAvail().x;
         float windowHeight = ImGui::GetContentRegionAvail().y;
