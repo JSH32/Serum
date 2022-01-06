@@ -1,33 +1,36 @@
 #include <cstring>
 #include "inspector.h"
 #include "imgui_internal.h"
-#include "components/tag.h"
+#include "components/entity_info.h"
 #include "components/shape.h"
 #include "imgui_utils.h"
 
 #include "icons.h"
 
 namespace Serum2D::Editor {
-    void InspectorPanel::OnUpdate() {
+    void InspectorPanel::onUpdate() {
         ImGui::Begin(ICON_FA_INFO_CIRCLE " Inspector");
         if (sceneHierarchy->selectedObject) {
-            if (sceneHierarchy->selectedObject.hasComponent<Core::Components::TagComponent>()) {
-                auto& tag = sceneHierarchy->selectedObject.getComponent<Core::Components::TagComponent>().tag;
+            if (sceneHierarchy->selectedObject.hasComponent<Core::Components::EntityInfoComponent>()) {
+                auto& eInfo = sceneHierarchy->selectedObject.getComponent<Core::Components::EntityInfoComponent>();
 
                 char buffer[256];
                 memset(buffer, 0, sizeof(buffer));
-                std::strncpy(buffer, tag.c_str(), sizeof(buffer));
-                if (ImGui::InputText("Name##Name", buffer, sizeof(buffer)))
-                    tag = std::string(buffer);
+                std::strncpy(buffer, eInfo.tag.c_str(), sizeof(buffer));
+                ImGui::Checkbox("##Enabled", &eInfo.enabled);
+                ImGui::SameLine();
+                ImGui::SetNextItemWidth(ImGui::GetContentRegionAvailWidth());
+                if (ImGui::InputText("##Name", buffer, sizeof(buffer)))
+                    eInfo.tag = std::string(buffer);
             }
 
-            DrawComponent<sf::Transformable>("Transform", sceneHierarchy->selectedObject, false, [](auto& transform) {
+            drawComponent<sf::Transformable>("Transform", sceneHierarchy->selectedObject, true, [](auto& transform) {
                 sf::Vector2f position = transform.getPosition();
-                Vector2fEditor("Position", position);
+                ImGui::Vector2fEditor("Position", position);
                 transform.setPosition(position);
 
                 sf::Vector2f scale = transform.getScale();
-                Vector2fEditor("Scale", scale);
+                ImGui::Vector2fEditor("Scale", scale);
                 transform.setScale(scale);
 
                 float rotation = transform.getRotation();
@@ -43,7 +46,7 @@ namespace Serum2D::Editor {
                 ImGui::EndColumns();
             });
 
-            DrawComponent<Core::Components::ShapeComponent>("Shape Renderer", sceneHierarchy->selectedObject, false, [](Core::Components::ShapeComponent& shape) {
+            drawComponent<Core::Components::ShapeComponent>("Shape Renderer", sceneHierarchy->selectedObject, true, [](Core::Components::ShapeComponent& shape) {
                 static const char* shapeTypeStrings[] = { "Rectangle", "Circle" };
                 const char* current;
 
@@ -52,12 +55,12 @@ namespace Serum2D::Editor {
                 else if (shape.shapeType == Core::Components::ShapeType::Circle)
                     current = shapeTypeStrings[1];
 
-                TwoColumnBegin("Shape type", 110);
+                twoColumnBegin("Shape type", 110);
                 if (ImGui::BeginCombo("##Type", current)) {
                     if (ImGui::Selectable(shapeTypeStrings[0], shape.shapeType == Core::Components::ShapeType::Rectangle))
-                        shape.SetShape(Core::Components::ShapeType::Rectangle);
+                        shape.setShape(Core::Components::ShapeType::Rectangle);
                     if (ImGui::Selectable(shapeTypeStrings[1], shape.shapeType == Core::Components::ShapeType::Circle))
-                        shape.SetShape(Core::Components::ShapeType::Circle);
+                        shape.setShape(Core::Components::ShapeType::Circle);
                     ImGui::EndCombo();
                 }
                 ImGui::EndColumns();
@@ -69,7 +72,7 @@ namespace Serum2D::Editor {
                     static_cast<float>(shape.shape->getFillColor().a) / 255.f
                 };
 
-                TwoColumnBegin("Color", 110);
+                twoColumnBegin("Color", 110);
                 if (ImGui::ColorEdit4("##Color", color))
                     shape.shape->setFillColor(sf::Color(
                             (int)(color[0] * 255.f),
@@ -78,7 +81,7 @@ namespace Serum2D::Editor {
                             (int)(color[3] * 255.f)));
                 ImGui::EndColumns();
 
-                TwoColumnBegin("Outline width", 110);
+                twoColumnBegin("Outline width", 110);
                 float outlineThickness = shape.shape->getOutlineThickness();
                 if (ImGui::DragFloat("##OutlineWidth", &outlineThickness, 0.1f, 0.0f, 0.0f, "%.2f"))
                     shape.shape->setOutlineThickness(outlineThickness);
@@ -91,7 +94,7 @@ namespace Serum2D::Editor {
                         static_cast<float>(shape.shape->getOutlineColor().a) / 255.f
                 };
 
-                TwoColumnBegin("Outline color", 110);
+                twoColumnBegin("Outline color", 110);
                 if (ImGui::ColorEdit4("##OutlineColor", outlineColor))
                     shape.shape->setOutlineColor(sf::Color(
                             (int)(outlineColor[0] * 255.f),
@@ -105,7 +108,7 @@ namespace Serum2D::Editor {
                     if (ImGui::TreeNodeEx("Rectangle properties", ImGuiTreeNodeFlags_DefaultOpen)) {
                         auto* rect = dynamic_cast<sf::RectangleShape*>(shape.shape.get());
                         sf::Vector2f size = rect->getSize();
-                        if (Vector2fEditor("Size", size, 70)) {
+                        if (ImGui::Vector2fEditor("Size", size, 70)) {
                             rect->setSize(size);
                             rect->setOrigin(sf::Vector2f(size.x / 2, size.y / 2));
                         }
@@ -116,14 +119,14 @@ namespace Serum2D::Editor {
                         auto* circle = dynamic_cast<sf::CircleShape*>(shape.shape.get());
                         float radius = circle->getRadius();
 
-                        TwoColumnBegin("Radius", 70);
+                        twoColumnBegin("Radius", 70);
                         if (ImGui::DragFloat("##Radius", &radius, 0.1f, 0.0f, 0.0f, "%.2f")) {
                             circle->setOrigin(sf::Vector2f(radius, radius));
                             circle->setRadius(radius);
                         }
                         ImGui::EndColumns();
 
-                        TwoColumnBegin("Points", 70);
+                        twoColumnBegin("Points", 70);
                         int pointCount = (int)circle->getPointCount();
                         if (ImGui::DragInt("##Points", &pointCount, 1.0f, 3, INT_MAX, "%d", ImGuiSliderFlags_AlwaysClamp))
                             circle->setPointCount(pointCount);
@@ -159,7 +162,7 @@ namespace Serum2D::Editor {
     }
 
     template<typename T, typename Fn>
-    void InspectorPanel::DrawComponent(const std::string &name, Core::Entity entity, bool removable, Fn fn) {
+    void InspectorPanel::drawComponent(const std::string &name, Core::Entity entity, bool removable, Fn fn) {
         const ImGuiTreeNodeFlags treeNodeFlags =
                 ImGuiTreeNodeFlags_DefaultOpen |
                 ImGuiTreeNodeFlags_Framed |
@@ -187,9 +190,10 @@ namespace Serum2D::Editor {
 
             bool removeComponent = false;
             if (ImGui::BeginPopup("ComponentSettings")) {
+                if (!removable) ImGui::BeginDisabled();
                 if (ImGui::MenuItem("Remove component"))
                     removeComponent = true;
-
+                if (!removable) ImGui::EndDisabled();
                 ImGui::EndPopup();
             }
 
@@ -203,58 +207,7 @@ namespace Serum2D::Editor {
         }
     }
 
-    bool InspectorPanel::Vector2fEditor(const std::string& label, sf::Vector2f& vec, float labelWidth) {
-        bool changed = false;
-
-        ImGui::PushID(label.c_str());
-
-        // Render label name in front of values
-        ImGui::Columns(2);
-        ImGui::SetColumnWidth(0, labelWidth);
-        ImGui::Text("%s", label.c_str());
-        ImGui::NextColumn();
-
-        // For some reason GetContentRegionAvailWidth goes over the actual available content width by about 33
-        ImGui::PushMultiItemsWidths(2, ImGui::GetContentRegionAvailWidth() - 33);
-        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 2, 5 });
-
-        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
-        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.9f, 0.2f, 0.2f, 1.0f });
-        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
-        ImGui::SetNextItemWidth(7);
-        if (ImGui::Button("X")) {
-            vec.x = 0.0f;
-            changed = true;
-        }
-        ImGui::PopStyleColor(3);
-        ImGui::SameLine();
-        if (ImGui::DragFloat("##X", &vec.x, 0.1f, 0.0f, 0.0f, "%.2f"))
-            changed = true;
-        ImGui::PopItemWidth();
-        ImGui::SameLine();
-
-        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.2f, 0.7f, 0.2f, 1.0f });
-        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.3f, 0.8f, 0.3f, 1.0f });
-        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.2f, 0.7f, 0.2f, 1.0f });
-        ImGui::SetNextItemWidth(7);
-        if (ImGui::Button("Y")) {
-            vec.y = 0.0f;
-            changed = true;
-        }
-        ImGui::PopStyleColor(3);
-
-        ImGui::SameLine();
-        if (ImGui::DragFloat("##Y", &vec.y, 0.1f, 0.0f, 0.0f, "%.2f"))
-            changed = true;
-        ImGui::PopItemWidth();
-        ImGui::PopStyleVar();
-        ImGui::EndColumns();
-        ImGui::PopID();
-
-        return changed;
-    }
-
-    void InspectorPanel::TwoColumnBegin(const std::string_view& label, float labelWidth) {
+    void InspectorPanel::twoColumnBegin(const std::string_view& label, float labelWidth) {
         ImGui::Columns(2);
         ImGui::SetColumnWidth(0, labelWidth);
         ImGui::Text("%s", label.data());

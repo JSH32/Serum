@@ -5,7 +5,7 @@
 namespace Serum2D {
     class Log {
     public:
-        static void Init();
+        static void init();
 
         static std::shared_ptr<spdlog::logger>& GetCoreLogger() { return coreLogger; }
         static std::shared_ptr<spdlog::logger>& GetClientLogger() { return clientLogger; }

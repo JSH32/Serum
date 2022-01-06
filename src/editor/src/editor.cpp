@@ -79,10 +79,10 @@ namespace Serum2D::Editor {
         ImFontConfig fontConfig;
         fontConfig.PixelSnapH = true;
 
-        io.FontDefault = io.Fonts->AddFontFromMemoryTTF(GetFileAsBuffer(droidSansFile), (int)droidSansFile.size(), 16.f, &fontConfig);
+        io.FontDefault = io.Fonts->AddFontFromMemoryTTF(getFileAsBuffer(droidSansFile), (int)droidSansFile.size(), 16.f, &fontConfig);
 
         fontConfig.MergeMode = true;
-        io.Fonts->AddFontFromMemoryTTF(GetFileAsBuffer(iconFontFile), (int)iconFontFile.size(), 14.f, &fontConfig, iconRanges);
+        io.Fonts->AddFontFromMemoryTTF(getFileAsBuffer(iconFontFile), (int)iconFontFile.size(), 14.f, &fontConfig, iconRanges);
         io.Fonts->Build();
         ImGui::SFML::UpdateFontTexture();
 
@@ -119,7 +119,8 @@ namespace Serum2D::Editor {
         startDockSpace();
         if (ImGui::BeginMenuBar()) {
             if (ImGui::BeginMenu("File")) {
-                ImGui::MenuItem("Exit");
+                if (ImGui::MenuItem("Exit"))
+                    window.close();
                 ImGui::EndMenu();
             }
             ImGui::EndMenuBar();
@@ -127,13 +128,13 @@ namespace Serum2D::Editor {
         ImGui::End(); // End dock space after menu bar
 
         for (auto& panel : panels)
-            panel->OnUpdate();
+            panel->onUpdate();
     }
 
     void Editor::onEvent(sf::Event event) {
         for (auto& panel : panels) {
-            if (panel->ReceiveEvents())
-                panel->OnEvent(event);
+            if (panel->shouldReceiveEvents())
+                panel->onEvent(event);
         }
     }
 

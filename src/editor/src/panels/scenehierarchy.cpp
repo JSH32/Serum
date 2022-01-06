@@ -1,6 +1,6 @@
 #include "scenehierarchy.h"
 #include "entity.h"
-#include "components/tag.h"
+#include "components/entity_info.h"
 #include "SFML/Graphics/Transformable.hpp"
 #include "SFML/Window/Event.hpp"
 #include "icons.h"
@@ -13,19 +13,24 @@ static const ImGuiTreeNodeFlags TREENODE_FLAGS =
 
 namespace Serum2D::Editor {
     void SceneHierarchyPanel::drawEntity(Core::Entity entity) {
-        auto tag = entity.getComponent<Core::Components::TagComponent>();
+        auto& eInfo = entity.getComponent<Core::Components::EntityInfoComponent>();
 
         auto treeNode = TREENODE_FLAGS;
         if (entity == selectedObject)
             treeNode = TREENODE_FLAGS | ImGuiTreeNodeFlags_Selected;
 
-        if (ImGui::TreeNodeEx((void *) (uint64_t) (uint32_t) entity, treeNode, ICON_FA_CUBE " %s", tag.tag.c_str())) {
-            if (ImGui::IsItemClicked(0)) {
+        // Darken if disabled
+        if (!eInfo.enabled)
+            ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.5f);
+
+        if (ImGui::TreeNodeEx((void *) (uint64_t) (uint32_t) entity, treeNode, ICON_FA_CUBE " %s", eInfo.tag.c_str())) {
+            if (ImGui::IsItemClicked(0))
                 selectedObject = entity;
-            }
 
             ImGui::TreePop();
         }
+
+        if (!eInfo.enabled) ImGui::PopStyleVar();
 
         if (ImGui::BeginPopupContextItem()) {
             if (ImGui::MenuItem("Delete")) {
@@ -38,7 +43,7 @@ namespace Serum2D::Editor {
         }
     }
 
-    void SceneHierarchyPanel::OnEvent(sf::Event event) {
+    void SceneHierarchyPanel::onEvent(sf::Event event) {
         if (event.type == sf::Event::KeyPressed) {
             if (event.key.code == sf::Keyboard::F) {
                 sceneViewPanel->sceneView.setCenter(selectedObject.getComponent<sf::Transformable>().getPosition());
@@ -47,7 +52,7 @@ namespace Serum2D::Editor {
         }
     }
 
-    void SceneHierarchyPanel::OnUpdate() {
+    void SceneHierarchyPanel::onUpdate() {
         ImGui::Begin(ICON_FA_LIST_UL " Hierarchy");
         scene.registry.each([&](auto entityID) {
             Core::Entity entity{ entityID , &scene };
@@ -61,7 +66,7 @@ namespace Serum2D::Editor {
             ImGui::EndPopup();
         }
 
-        ShouldReceiveEvents(ImGui::IsWindowFocused());
+        setReceiveEvents(ImGui::IsWindowFocused());
 
         ImGui::End();
     }

@@ -14,8 +14,8 @@ namespace Serum2D::Editor {
 //        void update();
 //        void processEvent(sf::Event event);
 
-        void OnEvent(sf::Event event) override;
-        void OnUpdate() override;
+        void onEvent(sf::Event event) override;
+        void onUpdate() override;
 
         Core::Scene& scene;
         Core::Entity selectedObject;

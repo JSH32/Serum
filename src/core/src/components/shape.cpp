@@ -4,14 +4,14 @@
 
 namespace Serum2D::Core::Components {
     ShapeComponent::ShapeComponent(ShapeType shapeType) : shapeType(shapeType) {
-        SetShape(shapeType);
+        setShape(shapeType);
     }
 
     void ShapeComponent::draw(sf::RenderTarget &target, sf::RenderStates states) const {
         target.draw(*shape, states);
     }
 
-    void ShapeComponent::SetShape(ShapeType newShapeType) {
+    void ShapeComponent::setShape(ShapeType newShapeType) {
         shapeType = newShapeType;
         std::unique_ptr<sf::Shape> newShape = nullptr;
 

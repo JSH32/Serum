@@ -9,7 +9,7 @@ int main() {
             sf::String("Serum"));
     window.setFramerateLimit(60);
 
-    Serum2D::Log::Init();
+    Serum2D::Log::init();
     S2D_CORE_INFO("Opening Serum2D editor");
 
     Serum2D::Editor::Editor editor(window);

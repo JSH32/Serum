@@ -5,12 +5,12 @@
 namespace Serum2D::Editor {
     class EditorPanel {
     public:
-        virtual void OnEvent(sf::Event event) {};
-        virtual void OnUpdate() = 0;
+        virtual void onEvent(sf::Event event) {};
+        virtual void onUpdate() = 0;
 
-        [[nodiscard]] bool ReceiveEvents() const { return receiveEvents; }
+        [[nodiscard]] bool shouldReceiveEvents() const { return receiveEvents; }
     protected:
-        void ShouldReceiveEvents(bool receive) { this->receiveEvents = receive; }
+        void setReceiveEvents(bool receive) { this->receiveEvents = receive; }
     private:
         bool receiveEvents = false;
     };

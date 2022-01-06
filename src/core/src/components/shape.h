@@ -22,7 +22,7 @@ namespace Serum2D::Core::Components {
         /**
          * Recreate the internal shape with a new type, this will attempt to transfer over shape properties
          */
-        void SetShape(ShapeType newShapeType);
+        void setShape(ShapeType newShapeType);
 
         ShapeType shapeType;
         std::unique_ptr<sf::Shape> shape;

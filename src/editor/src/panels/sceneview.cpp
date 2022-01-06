@@ -21,7 +21,7 @@ namespace Serum2D::Editor {
         renderTexture.draw(gridLineX);
     }
 
-    void SceneViewPanel::OnEvent(sf::Event event) {
+    void SceneViewPanel::onEvent(sf::Event event) {
 //        else if (event.mouseButton.button == 0) {
 //            auto pos = renderTexture.mapPixelToCoords(sf::Vector2i(event.mouseButton.x, -event.mouseButton.y));
 //            sf::RectangleShape r(sf::Vector2f(30, 30));
@@ -70,10 +70,10 @@ namespace Serum2D::Editor {
         }
     }
 
-    void SceneViewPanel::OnUpdate() {
+    void SceneViewPanel::onUpdate() {
         renderTexture.clear(sf::Color(50, 50, 50));
         drawGridLines();
-        scene->Render(renderTexture);
+        scene->render(renderTexture);
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
         ImGui::Begin(ICON_FA_VIDEO_CAMERA " Scene view");
@@ -87,7 +87,7 @@ namespace Serum2D::Editor {
         }
 
         ImGui::Image(sf::Sprite(renderTexture.getTexture()));
-        ShouldReceiveEvents(ImGui::IsWindowFocused());
+        setReceiveEvents(ImGui::IsWindowFocused());
         ImGui::End();
 
         ImGui::PopStyleVar();

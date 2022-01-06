@@ -17,8 +17,8 @@ namespace Serum2D::Editor {
     public:
         explicit SceneViewPanel(Core::Scene* scene);
 
-        void OnEvent(sf::Event event) override;
-        void OnUpdate() override;
+        void onEvent(sf::Event event) override;
+        void onUpdate() override;
     private:
         void drawGridLines();
 
