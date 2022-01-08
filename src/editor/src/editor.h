@@ -17,10 +17,13 @@ namespace Serum2D::Editor {
     private:
         static void startDockSpace();
 
-        Core::Scene scene;
-
         std::vector<std::unique_ptr<EditorPanel>> panels;
         sf::RenderWindow& window;
         sf::Clock deltaTime;
+    private:
+        friend EditorPanel;
+
+        Core::Scene scene;
+        Core::Entity selectedEntity;
     };
 }

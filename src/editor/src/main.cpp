@@ -1,7 +1,7 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/System/String.hpp>
 #include "editor.h"
-#include "log.h"
+#include "Serum/log.h"
 
 int main() {
     sf::RenderWindow window(

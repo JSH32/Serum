@@ -6,7 +6,7 @@
 #include "SFML/Graphics/Shape.hpp"
 #include "SFML/Graphics/RenderTarget.hpp"
 #include "SFML/Graphics/RectangleShape.hpp"
-#include "log.h"
+#include "Serum/log.h"
 #include "SFML/Graphics/CircleShape.hpp"
 
 namespace Serum2D::Core::Components {

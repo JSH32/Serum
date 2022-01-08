@@ -1,8 +1,8 @@
 #include "scene.h"
 #include "entity.h"
-#include "components/entity_info.h"
+#include "Serum/components/entity_info.h"
 #include "SFML/Graphics/Transformable.hpp"
-#include "components/shape.h"
+#include "Serum/components/shape.h"
 
 namespace Serum2D::Core {
     void Scene::destroyEntity(Entity entity) {

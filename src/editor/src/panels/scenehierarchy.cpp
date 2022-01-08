@@ -1,6 +1,7 @@
 #include "scenehierarchy.h"
-#include "entity.h"
-#include "components/entity_info.h"
+
+#include "Serum/entity.h"
+#include "Serum/components/entity_info.h"
 #include "SFML/Graphics/Transformable.hpp"
 #include "SFML/Window/Event.hpp"
 #include "icons.h"
@@ -16,7 +17,7 @@ namespace Serum2D::Editor {
         auto& eInfo = entity.getComponent<Core::Components::EntityInfoComponent>();
 
         auto treeNode = TREENODE_FLAGS;
-        if (entity == selectedObject)
+        if (entity == selectedEntity)
             treeNode = TREENODE_FLAGS | ImGuiTreeNodeFlags_Selected;
 
         // Darken if disabled
@@ -25,7 +26,7 @@ namespace Serum2D::Editor {
 
         if (ImGui::TreeNodeEx((void *) (uint64_t) (uint32_t) entity, treeNode, ICON_FA_CUBE " %s", eInfo.tag.c_str())) {
             if (ImGui::IsItemClicked(0))
-                selectedObject = entity;
+                selectedEntity = entity;
 
             ImGui::TreePop();
         }
@@ -35,8 +36,8 @@ namespace Serum2D::Editor {
         if (ImGui::BeginPopupContextItem()) {
             if (ImGui::MenuItem("Delete")) {
                 scene.destroyEntity(entity);
-                if (selectedObject == entity)
-                    selectedObject = {};
+                if (selectedEntity == entity)
+                    selectedEntity = {};
             }
 
             ImGui::EndPopup();
@@ -46,7 +47,7 @@ namespace Serum2D::Editor {
     void SceneHierarchyPanel::onEvent(sf::Event event) {
         if (event.type == sf::Event::KeyPressed) {
             if (event.key.code == sf::Keyboard::F) {
-                sceneViewPanel->sceneView.setCenter(selectedObject.getComponent<sf::Transformable>().getPosition());
+                sceneViewPanel->sceneView.setCenter(selectedEntity.getComponent<sf::Transformable>().getPosition());
                 sceneViewPanel->renderTexture.setView(sceneViewPanel->sceneView);
             }
         }

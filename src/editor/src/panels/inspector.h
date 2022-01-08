@@ -1,9 +1,9 @@
 #pragma once
 
-#include "scene.h"
+#include "Serum/scene.h"
 #include "imgui.h"
 #include "imgui-SFML.h"
-#include "entity.h"
+#include "Serum/entity.h"
 #include "editorpanel.h"
 #include "scenehierarchy.h"
 

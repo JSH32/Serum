@@ -12,6 +12,6 @@ namespace Serum2D::Core::Components {
         EntityInfoComponent(const EntityInfoComponent&) = default;
 
         std::string tag;
-        bool enabled;
+        bool enabled{};
     };
 }

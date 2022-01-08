@@ -1,8 +1,8 @@
 #include <cstring>
 #include "inspector.h"
 #include "imgui_internal.h"
-#include "components/entity_info.h"
-#include "components/shape.h"
+#include "Serum/components/entity_info.h"
+#include "Serum/components/shape.h"
 #include "imgui_utils.h"
 
 #include "icons.h"
@@ -10,9 +10,9 @@
 namespace Serum2D::Editor {
     void InspectorPanel::onUpdate() {
         ImGui::Begin(ICON_FA_INFO_CIRCLE " Inspector");
-        if (sceneHierarchy->selectedObject) {
-            if (sceneHierarchy->selectedObject.hasComponent<Core::Components::EntityInfoComponent>()) {
-                auto& eInfo = sceneHierarchy->selectedObject.getComponent<Core::Components::EntityInfoComponent>();
+        if (sceneHierarchy->selectedEntity) {
+            if (sceneHierarchy->selectedEntity.hasComponent<Core::Components::EntityInfoComponent>()) {
+                auto& eInfo = sceneHierarchy->selectedEntity.getComponent<Core::Components::EntityInfoComponent>();
 
                 char buffer[256];
                 memset(buffer, 0, sizeof(buffer));
@@ -24,7 +24,7 @@ namespace Serum2D::Editor {
                     eInfo.tag = std::string(buffer);
             }
 
-            drawComponent<sf::Transformable>("Transform", sceneHierarchy->selectedObject, true, [](auto& transform) {
+            drawComponent<sf::Transformable>(ICON_FA_VECTOR_SQUARE " Transform", sceneHierarchy->selectedEntity, true, [](auto& transform) {
                 sf::Vector2f position = transform.getPosition();
                 ImGui::Vector2fEditor("Position", position);
                 transform.setPosition(position);
@@ -46,7 +46,7 @@ namespace Serum2D::Editor {
                 ImGui::EndColumns();
             });
 
-            drawComponent<Core::Components::ShapeComponent>("Shape Renderer", sceneHierarchy->selectedObject, true, [](Core::Components::ShapeComponent& shape) {
+            drawComponent<Core::Components::ShapeComponent>(ICON_FA_SHAPES " Shape Renderer", sceneHierarchy->selectedEntity, true, [](Core::Components::ShapeComponent& shape) {
                 static const char* shapeTypeStrings[] = { "Rectangle", "Circle" };
                 const char* current;
 
@@ -138,18 +138,18 @@ namespace Serum2D::Editor {
             });
 
             ImGui::Separator();
-            if (ImGui::Button(ICON_FA_PLUS_SQUARE_O " Add Component", ImVec2(ImGui::GetContentRegionAvailWidth(), 25)))
+            if (ImGui::Button(ICON_FA_PLUS_SQUARE " Add Component", ImVec2(ImGui::GetContentRegionAvailWidth(), 25)))
                 ImGui::OpenPopup("AddComponent");
 
             if (ImGui::BeginPopup("AddComponent")) {
                 bool hadShapeComponent = false;
-                if (sceneHierarchy->selectedObject.hasComponent<Core::Components::ShapeComponent>()) {
+                if (sceneHierarchy->selectedEntity.hasComponent<Core::Components::ShapeComponent>()) {
                     ImGui::BeginDisabled();
                     hadShapeComponent = true;
                 }
 
                 if (ImGui::MenuItem("Shape renderer"))
-                    sceneHierarchy->selectedObject.addComponent<Core::Components::ShapeComponent>(Core::Components::ShapeType::Rectangle);
+                    sceneHierarchy->selectedEntity.addComponent<Core::Components::ShapeComponent>(Core::Components::ShapeType::Rectangle);
 
                 if (hadShapeComponent)
                     ImGui::EndDisabled();

@@ -9,12 +9,16 @@ set(LIBRARY_BUILD_DIR build)
 
 # sfml
 add_subdirectory(${VENDOR_DIR}/SFML)
+add_subdirectory(${VENDOR_DIR}/Thor)
 
 # entt
 add_subdirectory(${VENDOR_DIR}/entt)
 
 # spdlog
 add_subdirectory(${VENDOR_DIR}/spdlog)
+
+# box2d
+add_subdirectory(${VENDOR_DIR}/box2d)
 
 # imgui
 set(IMGUI_SFML_FIND_SFML OFF) # sfml already imported, no need to use find_package
