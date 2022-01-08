@@ -6,6 +6,7 @@ set(SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/src)
 file(GLOB_RECURSE SRC
         "${SOURCE_DIR}/*.cpp"
         "${SOURCE_DIR}/*.c"
+        "${SOURCE_DIR}/*.h"
         )
 
 add_executable(editor ${SRC} src/imgui_utils.cpp)

@@ -26,13 +26,13 @@ namespace ImGui {
         };
     }
 
-    sf::Vector2f CalculateImOffset(sf::RenderTarget& target, sf::Vector2i pos, ImVec2 contentStartPos) {
+    sf::Vector2f CalculateImOffset(const  sf::RenderTarget& target, const  sf::Vector2i pos, const ImVec2 contentStartPos) {
         return target.mapPixelToCoords(sf::Vector2i(
                 (int)((float)pos.x - contentStartPos.x),
                 (int)((-(float)pos.y) + contentStartPos.y)));
     }
 
-    bool Vector2fEditor(const std::string& label, sf::Vector2f& vec, float labelWidth) {
+    bool Vector2fEditor(const std::string& label, sf::Vector2f& vec, const float labelWidth) {
         bool changed = false;
 
         ImGui::PushID(label.c_str());

@@ -25,6 +25,6 @@ namespace ImGui {
      * @param pos Position relative to window
      * @param contentStartPos Starting content position, click position will be relative to this point at (0, 0)
      */
-    sf::Vector2f CalculateImOffset(sf::RenderTarget& target, sf::Vector2i pos, ImVec2 contentStartPos);
+    sf::Vector2f CalculateImOffset(const  sf::RenderTarget& target, const  sf::Vector2i pos, const ImVec2 contentStartPos);
     bool Vector2fEditor(const std::string& label, sf::Vector2f& vec, float labelWidth = 100.f);
 }

@@ -38,8 +38,8 @@ namespace Serum2D::Editor {
         // Resize RenderTexture based on the size of the ImGui window
         float windowWidth = ImGui::GetContentRegionAvail().x;
         float windowHeight = ImGui::GetContentRegionAvail().y;
-        if ((uint)windowWidth != renderTexture.getSize().x || (uint)windowHeight != renderTexture.getSize().y) {
-            renderTexture.create((uint)windowWidth, (uint)windowHeight);
+        if ((unsigned int)windowWidth != renderTexture.getSize().x || (unsigned int)windowHeight != renderTexture.getSize().y) {
+            renderTexture.create((unsigned int)windowWidth, (unsigned int)windowHeight);
             sceneView.setSize(windowWidth, windowHeight);
             renderTexture.setView(sceneView);
         }
@@ -137,7 +137,7 @@ namespace Serum2D::Editor {
                         auto& transform = entity.getComponent<sf::Transformable>();
                         auto& shape = entity.getComponent<Core::Components::ShapeComponent>();
 
-                        sf::Vector2f points[shape.shape->getPointCount()];
+                        std::vector<sf::Vector2f> points(shape.shape->getPointCount());
                         for (int i = 0; i < shape.shape->getPointCount(); i++) {
                             sf::Transformable shapeTransform(transform);
                             shapeTransform.setOrigin(shape.shape->getOrigin());
@@ -146,7 +146,7 @@ namespace Serum2D::Editor {
                         }
 
                         // Clicked in the shape
-                        if (MathUtils::pointInPolygon(points, (int)shape.shape->getPointCount(),ImGui::CalculateImOffset(renderTexture, sf::Vector2i(
+                        if (MathUtils::pointInPolygon(&points[0], (int)shape.shape->getPointCount(), ImGui::CalculateImOffset(renderTexture, sf::Vector2i(
                                 event.mouseButton.x, event.mouseButton.y), std::get<0>(windowContentArea)))) {
                             selectedEntity = entity;
                             entityClicked = true;
