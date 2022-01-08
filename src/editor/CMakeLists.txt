@@ -6,13 +6,12 @@ set(SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/src)
 file(GLOB_RECURSE SRC
         "${SOURCE_DIR}/*.cpp"
         "${SOURCE_DIR}/*.c"
-        "${VENDOR_DIR}/ImGuizmo"
         )
 
-add_executable(editor ${SRC} src/panels/inspector.cpp src/panels/inspector.h src/panels/editorpanel.h)
-target_include_directories(editor PRIVATE ${SOURCE_DIR} ${VENDOR_DIR}/ImGuizmo)
+add_executable(editor ${SRC} src/imgui_utils.cpp)
 
 target_link_libraries(editor PRIVATE serum)
+target_include_directories(editor PRIVATE ${SOURCE_DIR})
 
 # CmakeRC
 include(${VENDOR_DIR}/cmrc/CMakeRC.cmake)

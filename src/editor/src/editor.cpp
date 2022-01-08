@@ -1,9 +1,9 @@
 #include "editor.h"
 #include "imgui-SFML.h"
 #include "imgui.h"
-#include "entity.h"
+#include "Serum/entity.h"
 #include "panels/inspector.h"
-#include "components/shape.h"
+#include "Serum/components/shape.h"
 #include "resources.h"
 #include "icons.h"
 
@@ -73,7 +73,7 @@ namespace Serum2D::Editor {
         io.Fonts->AddFontDefault();
 
         auto droidSansFile = cmrc::resources::get_filesystem().open("DroidSans.ttf");
-        auto iconFontFile = cmrc::resources::get_filesystem().open("fontawesome-webfont.ttf");
+        auto iconFontFile = cmrc::resources::get_filesystem().open("fa-solid-900.ttf");
 
         static const ImWchar iconRanges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
         ImFontConfig fontConfig;
@@ -86,8 +86,8 @@ namespace Serum2D::Editor {
         io.Fonts->Build();
         ImGui::SFML::UpdateFontTexture();
 
-        panels.push_back(std::make_unique<SceneViewPanel>(&scene));
-        panels.push_back(std::make_unique<SceneHierarchyPanel>(scene, dynamic_cast<SceneViewPanel*>(panels.back().get())));
+        panels.push_back(std::make_unique<SceneViewPanel>(&scene, selectedEntity));
+        panels.push_back(std::make_unique<SceneHierarchyPanel>(scene, dynamic_cast<SceneViewPanel*>(panels.back().get()), selectedEntity));
         panels.push_back(std::make_unique<InspectorPanel>(scene, dynamic_cast<SceneHierarchyPanel*>(panels.back().get())));
     }
 

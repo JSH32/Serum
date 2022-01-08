@@ -8,12 +8,15 @@ file(GLOB_RECURSE SRC
         ${SOURCE_DIR}/*.cpp
         ${SOURCE_DIR}/*.c)
 
-add_library(serum ${SRC})
+add_library(serum ${SRC} src/Serum/math_utils.cpp src/Serum/math_utils.h)
 target_include_directories(serum PUBLIC ${SOURCE_DIR})
 target_include_directories(serum PUBLIC ${INCLUDE_DIR})
 target_include_directories(serum PUBLIC ${VENDOR_DIR}/entt/single_include/entt)
 
-target_link_libraries(serum PUBLIC sfml-graphics sfml-audio)
+target_link_libraries(serum PUBLIC sfml-graphics sfml-window sfml-system)
 target_link_libraries(serum PUBLIC EnTT::EnTT)
 target_link_libraries(serum PUBLIC ImGui-SFML::ImGui-SFML)
 target_link_libraries(serum PUBLIC spdlog)
+target_link_libraries(serum PUBLIC thor)
+
+target_include_directories(serum PUBLIC ${VENDOR_DIR}/Thor/include ${VENDOR_DIR}/Thor/extlibs/aurora/include)
