@@ -19,3 +19,6 @@
 [submodule "vendor/box2d"]
 	path = vendor/box2d
 	url = https://github.com/erincatto/box2d.git
+[submodule "vendor/Thor"]
+	path = vendor/Thor
+	url = https://github.com/Bromeon/Thor.git
