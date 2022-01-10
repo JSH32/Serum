@@ -73,8 +73,8 @@ namespace Serum2D::Editor {
 
         io.Fonts->AddFontDefault();
 
-        const auto droidSansFile = cmrc::Resources::get_filesystem().open("DroidSans.ttf");
-        const auto iconFontFile = cmrc::Resources::get_filesystem().open("fa-solid-900.ttf");
+        const auto droidSansFile = cmrc::Resources::get_filesystem().open("fonts/DroidSans.ttf");
+        const auto iconFontFile = cmrc::Resources::get_filesystem().open("fonts/fa-solid-900.ttf");
 
         static constexpr ImWchar iconRanges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
         ImFontConfig fontConfig;
