@@ -1,21 +1,16 @@
 #pragma once
 
 #include <memory>
-#include <functional>
 #include "SFML/Graphics/Drawable.hpp"
 #include "SFML/Graphics/Shape.hpp"
-#include "SFML/Graphics/RenderTarget.hpp"
-#include "SFML/Graphics/RectangleShape.hpp"
-#include "Serum/log.h"
-#include "SFML/Graphics/CircleShape.hpp"
 
 namespace Serum2D::Core::Components {
-    enum ShapeType {
+    enum class ShapeType {
         Circle,
         Rectangle
     };
 
-    class ShapeComponent : public sf::Drawable {
+    class ShapeComponent final : public sf::Drawable {
     public:
         explicit ShapeComponent(ShapeType shapeType);
 

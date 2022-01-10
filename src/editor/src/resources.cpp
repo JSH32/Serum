@@ -1,5 +1,5 @@
 #include "resources.h"
 
-void* getFileAsBuffer(cmrc::file& file) {
+void* getFileAsBuffer(const cmrc::file& file) {
     return (void*)&*file.begin();
 }

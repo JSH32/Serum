@@ -1,31 +1,31 @@
-#include "math_utils.h"
+#include "mathutils.h"
 
 #include <algorithm>
 
 #define INF 10000
 
 namespace Serum2D::MathUtils {
-    bool onSegment(sf::Vector2f p, sf::Vector2f q, sf::Vector2f r) {
+    bool onSegment(const sf::Vector2f p, const sf::Vector2f q, const sf::Vector2f r) {
         if (q.x <= std::max(p.x, r.x) && q.x >= std::min(p.x, r.x) &&
             q.y <= std::max(p.y, r.y) && q.y >= std::min(p.y, r.y))
             return true;
         return false;
     }
 
-    float orientationTriplet(sf::Vector2f p, sf::Vector2f q, sf::Vector2f r) {
-        float val = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
+    float orientationTriplet(const sf::Vector2f p, const sf::Vector2f q, const sf::Vector2f r) {
+	    const float val = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
 
         if (val == 0) return 0; // collinear
         return (val > 0)? 1: 2; // clock or counterclockwise
     }
 
-    bool doIntersect(sf::Vector2f p1, sf::Vector2f q1, sf::Vector2f p2, sf::Vector2f q2) {
+    bool doIntersect(const sf::Vector2f p1, const sf::Vector2f q1, const sf::Vector2f p2, const sf::Vector2f q2) {
         // Find the four orientations needed for general and
         // special cases
-        float o1 = orientationTriplet(p1, q1, p2);
-        float o2 = orientationTriplet(p1, q1, q2);
-        float o3 = orientationTriplet(p2, q2, p1);
-        float o4 = orientationTriplet(p2, q2, q1);
+        const float o1 = orientationTriplet(p1, q1, p2);
+        const float o2 = orientationTriplet(p1, q1, q2);
+        const float o3 = orientationTriplet(p2, q2, p1);
+        const float o4 = orientationTriplet(p2, q2, q1);
 
         // General case
         if (o1 != o2 && o3 != o4)
@@ -47,17 +47,17 @@ namespace Serum2D::MathUtils {
         return false; // Doesn't fall in any of the above cases
     }
 
-    bool pointInPolygon(sf::Vector2f polygon[], int n, sf::Vector2f p) {
+    bool pointInPolygon(sf::Vector2f polygon[], const int n, const sf::Vector2f p) {
         // There must be at least 3 vertices in polygon[]
         if (n < 3) return false;
 
         // Create a point for line segment from p to infinite
-        sf::Vector2f extreme(INF, p.y);
+        const sf::Vector2f extreme(INF, p.y);
 
         // Count intersections of the above line with sides of polygon
         int count = 0, i = 0;
         do {
-            int next = (i+1)%n;
+            const int next = (i+1)%n;
 
             // Check if the line segment from 'p' to 'extreme' intersects
             // with the line segment from 'polygon[i]' to 'polygon[next]'

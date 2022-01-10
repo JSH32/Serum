@@ -44,7 +44,7 @@ set_target_properties(
 	glfw
 	imgui
 	ImGui-SFML
-	resources
+	Resources
 	sajson
 	spdlog
 	testbed

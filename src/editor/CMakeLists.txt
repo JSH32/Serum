@@ -9,7 +9,7 @@ file(GLOB_RECURSE SRC
         "${SOURCE_DIR}/*.h"
         )
 
-add_executable(editor ${SRC} src/imgui_utils.cpp)
+add_executable(editor ${SRC})
 
 target_link_libraries(editor PRIVATE serum)
 target_include_directories(editor PRIVATE ${SOURCE_DIR})
@@ -19,5 +19,5 @@ include(${VENDOR_DIR}/cmrc/CMakeRC.cmake)
 
 set(RESOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/resources)
 file(GLOB_RECURSE RESOURCES ${RESOURCE_DIR}/*)
-cmrc_add_resource_library(resources NAMESPACE resources WHENCE ${RESOURCE_DIR} ${RESOURCES})
-target_link_libraries(editor PRIVATE resources)
+cmrc_add_resource_library(Resources NAMESPACE Resources WHENCE ${RESOURCE_DIR} ${RESOURCES})
+target_link_libraries(editor PRIVATE Resources)

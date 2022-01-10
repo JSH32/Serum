@@ -1,10 +1,7 @@
 #pragma once
 
-#include <string_view>
 #include <string>
-#include <vector>
 #include "entt.hpp"
-#include "SFML/System/Time.hpp"
 #include "SFML/Graphics/RenderTarget.hpp"
 
 namespace Serum2D::Core {
@@ -12,7 +9,9 @@ namespace Serum2D::Core {
 
     class Scene {
     public:
-        explicit Scene(const std::string_view& name) : name(name) {};
+        explicit Scene(const std::string_view& name) : name(name) {}
+
+        const std::vector<Entity>& getRootOrderedEntities() { return rootOrderedEntities; }
 
         Entity createEntity(const std::string& entityName = std::string());
         void destroyEntity(Entity entity);
@@ -21,5 +20,7 @@ namespace Serum2D::Core {
 
         std::string name;
         entt::registry registry;
+    private:
+        std::vector<Entity> rootOrderedEntities;
     };
 }

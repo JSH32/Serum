@@ -1,3 +1,4 @@
+// ReSharper disable CppInconsistentNaming
 #include "imgui_utils.h"
 
 #include <imgui_internal.h>
@@ -5,7 +6,7 @@
 namespace ImGui {
     std::vector<float> alphas;
 
-    void PushDisabled(bool disabled) {
+    void PushDisabled(const bool disabled) {
         alphas.push_back(GetStyle().Alpha);
         GetStyle().Alpha = disabled ? 0.25f : 1.0f;
     }

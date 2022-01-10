@@ -1,17 +1,15 @@
 #pragma once
 
 #include "Serum/scene.h"
-#include "imgui.h"
-#include "imgui-SFML.h"
 #include "Serum/entity.h"
 #include "editorpanel.h"
 #include "scenehierarchy.h"
 
 namespace Serum2D::Editor {
-    class InspectorPanel : public EditorPanel {
+    class InspectorPanel final : public EditorPanel {
     public:
         InspectorPanel(Core::Scene& scene, SceneHierarchyPanel* sceneHierarchy)
-            : scene(scene), sceneHierarchy(sceneHierarchy) {};
+            : scene(scene), sceneHierarchy(sceneHierarchy) {}
 
         void onUpdate() override;
         Core::Scene& scene;

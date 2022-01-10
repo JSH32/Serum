@@ -12,8 +12,8 @@ namespace Serum2D::Editor {
         explicit Editor(sf::RenderWindow& window);
 
         void run();
-        void onEvent(sf::Event event);
-        void update();
+        void onEvent(sf::Event event) const;
+        void update() const;
     private:
         static void startDockSpace();
 

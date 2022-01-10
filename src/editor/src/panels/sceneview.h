@@ -3,22 +3,17 @@
 #include "SFML/System/Vector2.hpp"
 #include "SFML/Graphics/RectangleShape.hpp"
 #include "SFML/Window/Event.hpp"
-#include "SFML/Window/Window.hpp"
 #include "SFML/Graphics/RenderTexture.hpp"
 #include "SFML/Graphics/Sprite.hpp"
 #include "imgui.h"
 #include "editorpanel.h"
 #include "Serum/scene.h"
-#include <imgui-SFML.h>
 #include "Serum/entity.h"
-#include "Thor/Shapes/Arrow.hpp"
-#include "imgui_utils.h"
-#include "Serum/components/shape.h"
 
 namespace Serum2D::Editor {
     class SceneHierarchyPanel;
 
-    class SceneViewPanel : public EditorPanel {
+    class SceneViewPanel final : public EditorPanel {
     public:
         SceneViewPanel(Core::Scene* scene, Core::Entity& selectedEntity);
 
@@ -26,6 +21,12 @@ namespace Serum2D::Editor {
         void onUpdate() override;
     private:
         void drawGridLines();
+
+        /**
+         * Update current data relating to position in transform
+         * This will also render the position gizmo
+         */
+        void updateTransformPositionGizmo(const sf::Transformable& transform);
 
         float zoom = 1; // Zoom
         bool panning = false; // Is currently panning camera
@@ -37,22 +38,22 @@ namespace Serum2D::Editor {
 
         sf::RectangleShape gridLineY, gridLineX;
 
-        enum TransformType {
+        enum class TransformType {
             None, // Default when not doing anything
             Position,
             Scale,
             Rotate
         };
 
-        enum DragAxis {
+        enum class DragAxis {
             Horizontal,
             Vertical,
             Any
         };
 
-        DragAxis dragAxis = DragAxis::Horizontal;
         bool transforming = false;
-        TransformType transformType = TransformType::None;
+        DragAxis dragAxis = DragAxis::Horizontal;
+        TransformType transformType = TransformType::Position;
         sf::Vector2f oldItemPos;
 
         // Only used for position and scale

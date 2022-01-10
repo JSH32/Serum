@@ -6,10 +6,11 @@
 #include "Serum/components/shape.h"
 #include "resources.h"
 #include "icons.h"
+#include "Serum/log.h"
 
 namespace Serum2D::Editor {
     Editor::Editor(sf::RenderWindow &window)
-        : window(window), scene(Serum2D::Core::Scene("Test Scene")) {
+        : window(window), scene(Core::Scene("Test Scene")) {
         (void)ImGui::SFML::Init(window);
 
         ImGuiIO& io = ImGui::GetIO(); (void)io;
@@ -72,10 +73,10 @@ namespace Serum2D::Editor {
 
         io.Fonts->AddFontDefault();
 
-        auto droidSansFile = cmrc::resources::get_filesystem().open("DroidSans.ttf");
-        auto iconFontFile = cmrc::resources::get_filesystem().open("fa-solid-900.ttf");
+        const auto droidSansFile = cmrc::Resources::get_filesystem().open("DroidSans.ttf");
+        const auto iconFontFile = cmrc::Resources::get_filesystem().open("fa-solid-900.ttf");
 
-        static const ImWchar iconRanges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
+        static constexpr ImWchar iconRanges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
         ImFontConfig fontConfig;
         fontConfig.PixelSnapH = true;
 
@@ -84,7 +85,7 @@ namespace Serum2D::Editor {
         fontConfig.MergeMode = true;
         io.Fonts->AddFontFromMemoryTTF(getFileAsBuffer(iconFontFile), (int)iconFontFile.size(), 14.f, &fontConfig, iconRanges);
         io.Fonts->Build();
-        ImGui::SFML::UpdateFontTexture();
+        (void)ImGui::SFML::UpdateFontTexture();
 
         panels.push_back(std::make_unique<SceneViewPanel>(&scene, selectedEntity));
         panels.push_back(std::make_unique<SceneHierarchyPanel>(scene, dynamic_cast<SceneViewPanel*>(panels.back().get()), selectedEntity));
@@ -115,7 +116,7 @@ namespace Serum2D::Editor {
         }
     }
 
-    void Editor::update() {
+    void Editor::update() const {
         startDockSpace();
         if (ImGui::BeginMenuBar()) {
             if (ImGui::BeginMenu("File")) {
@@ -127,11 +128,11 @@ namespace Serum2D::Editor {
         }
         ImGui::End(); // End dock space after menu bar
 
-        for (auto& panel : panels)
+        for (const auto& panel : panels)
             panel->onUpdate();
     }
 
-    void Editor::onEvent(sf::Event event) {
+    void Editor::onEvent(sf::Event event) const {
         for (auto& panel : panels) {
             if (panel->shouldReceiveEvents())
                 panel->onEvent(event);
@@ -139,25 +140,24 @@ namespace Serum2D::Editor {
     }
 
     void Editor::startDockSpace() {
-        ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+        ImGuiWindowFlags windowFlags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
         const ImGuiViewport* viewport = ImGui::GetMainViewport();
         ImGui::SetNextWindowPos(viewport->WorkPos);
         ImGui::SetNextWindowSize(viewport->WorkSize);
         ImGui::SetNextWindowViewport(viewport->ID);
         ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
         ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-        window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-        window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+        windowFlags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+        windowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-        ImGui::Begin("DockSpace Demo", nullptr, window_flags);
+        ImGui::Begin("DockSpace Demo", nullptr, windowFlags);
         ImGui::PopStyleVar();
 
         ImGui::PopStyleVar(2);
 
-        ImGuiIO& io = ImGui::GetIO();
-        if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable) {
-            ImGuiID dockspaceId = ImGui::GetID("Dockspace");
+        if (ImGuiIO& io = ImGui::GetIO(); io.ConfigFlags & ImGuiConfigFlags_DockingEnable) {
+	        const ImGuiID dockspaceId = ImGui::GetID("Dockspace");
             ImGui::DockSpace(dockspaceId, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
         }
     }

@@ -1,9 +1,10 @@
+// ReSharper disable CppInconsistentNaming
 #pragma once
 
-#include <vector>
 #include <imgui.h>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Window/Event.hpp>
+#include <vector>
 
 /**
  * Things inserted into the ImGui namespace, addon functions or utilities
@@ -14,7 +15,6 @@ namespace ImGui {
 
     /**
      * Get the position of the content area top and bottom corner
-     * @return
      */
     std::tuple<ImVec2, ImVec2> GetContentArea();
 
@@ -26,5 +26,6 @@ namespace ImGui {
      * @param contentStartPos Starting content position, click position will be relative to this point at (0, 0)
      */
     sf::Vector2f CalculateImOffset(const  sf::RenderTarget& target, const  sf::Vector2i pos, const ImVec2 contentStartPos);
-    bool Vector2fEditor(const std::string& label, sf::Vector2f& vec, float labelWidth = 100.f);
+
+    bool Vector2fEditor(const std::string& label, sf::Vector2f& vec, const float labelWidth = 100.f);
 }

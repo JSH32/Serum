@@ -9,7 +9,7 @@ file(GLOB_RECURSE SRC
         ${SOURCE_DIR}/*.c
         ${SOURCE_DIR}/*.h)
 
-add_library(serum STATIC ${SRC} src/Serum/math_utils.cpp src/Serum/math_utils.h)
+add_library(serum STATIC ${SRC})
 target_include_directories(serum PUBLIC ${SOURCE_DIR})
 target_include_directories(serum PUBLIC ${INCLUDE_DIR})
 target_include_directories(serum PUBLIC ${VENDOR_DIR}/entt/single_include/entt)

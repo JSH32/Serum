@@ -1,11 +1,12 @@
 #include <cstring>
 #include "inspector.h"
 #include "imgui_internal.h"
-#include "Serum/components/entity_info.h"
+#include "Serum/components/entityinfo.h"
 #include "Serum/components/shape.h"
 #include "imgui_utils.h"
 
 #include "icons.h"
+#include "SFML/Graphics/CircleShape.hpp"
 
 namespace Serum2D::Editor {
     void InspectorPanel::onUpdate() {
@@ -14,8 +15,7 @@ namespace Serum2D::Editor {
             if (sceneHierarchy->selectedEntity.hasComponent<Core::Components::EntityInfoComponent>()) {
                 auto& eInfo = sceneHierarchy->selectedEntity.getComponent<Core::Components::EntityInfoComponent>();
 
-                char buffer[256];
-                memset(buffer, 0, sizeof(buffer));
+                char buffer[256] = {};
                 std::strncpy(buffer, eInfo.tag.c_str(), sizeof(buffer));
                 ImGui::Checkbox("##Enabled", &eInfo.enabled);
                 ImGui::SameLine();
@@ -48,7 +48,7 @@ namespace Serum2D::Editor {
 
             drawComponent<Core::Components::ShapeComponent>(ICON_FA_SHAPES " Shape Renderer", sceneHierarchy->selectedEntity, true, [](Core::Components::ShapeComponent& shape) {
                 static const char* shapeTypeStrings[] = { "Rectangle", "Circle" };
-                const char* current;
+                const char* current{};
 
                 if (shape.shapeType == Core::Components::ShapeType::Rectangle)
                     current = shapeTypeStrings[0];
@@ -107,8 +107,7 @@ namespace Serum2D::Editor {
                 if (shape.shapeType == Core::Components::ShapeType::Rectangle) {
                     if (ImGui::TreeNodeEx("Rectangle properties", ImGuiTreeNodeFlags_DefaultOpen)) {
                         auto* rect = dynamic_cast<sf::RectangleShape*>(shape.shape.get());
-                        sf::Vector2f size = rect->getSize();
-                        if (ImGui::Vector2fEditor("Size", size, 70)) {
+                        if (auto size = rect->getSize(); ImGui::Vector2fEditor("Size", size, 70)) {
                             rect->setSize(size);
                             rect->setOrigin(sf::Vector2f(size.x / 2, size.y / 2));
                         }
@@ -156,14 +155,13 @@ namespace Serum2D::Editor {
 
                 ImGui::EndPopup();
             }
-//            ImGui::PopItemWidth();
         }
         ImGui::End();
     }
 
     template<typename T, typename Fn>
     void InspectorPanel::drawComponent(const std::string &name, Core::Entity entity, bool removable, Fn fn) {
-        const ImGuiTreeNodeFlags treeNodeFlags =
+        constexpr ImGuiTreeNodeFlags treeNodeFlags =
                 ImGuiTreeNodeFlags_DefaultOpen |
                 ImGuiTreeNodeFlags_Framed |
                 ImGuiTreeNodeFlags_SpanAvailWidth |
@@ -172,12 +170,12 @@ namespace Serum2D::Editor {
 
         if (entity.hasComponent<T>()) {
             auto& component = entity.getComponent<T>();
-            ImVec2 contentRegionAvailable = ImGui::GetContentRegionAvail();
+            const auto contentRegionAvailable = ImGui::GetContentRegionAvail();
 
             ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{ 4, 4 });
-            float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+            const float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
             ImGui::Separator();
-            bool open = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), treeNodeFlags, "%s", name.c_str());
+            const bool open = ImGui::TreeNodeEx(reinterpret_cast<void*>(typeid(T).hash_code()), treeNodeFlags, "%s", name.c_str());
             ImGui::PopStyleVar();
             ImGui::SameLine(contentRegionAvailable.x - lineHeight * 0.5f);
 
@@ -207,7 +205,7 @@ namespace Serum2D::Editor {
         }
     }
 
-    void InspectorPanel::twoColumnBegin(const std::string_view& label, float labelWidth) {
+    void InspectorPanel::twoColumnBegin(const std::string_view& label, const float labelWidth) {
         ImGui::Columns(2);
         ImGui::SetColumnWidth(0, labelWidth);
         ImGui::Text("%s", label.data());

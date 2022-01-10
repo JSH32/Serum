@@ -6,10 +6,8 @@
 namespace Serum2D::Core::Components {
     class EntityInfoComponent {
     public:
-        explicit EntityInfoComponent(std::string tag, bool enabled = true)
+	    explicit EntityInfoComponent(std::string tag = "New entity", const bool enabled = true)
             : tag(std::move(tag)), enabled(enabled) {}
-        EntityInfoComponent() = default;
-        EntityInfoComponent(const EntityInfoComponent&) = default;
 
         std::string tag;
         bool enabled{};

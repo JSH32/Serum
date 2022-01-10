@@ -1,17 +1,18 @@
 #include "shape.h"
 #include "SFML/Graphics/RectangleShape.hpp"
 #include "SFML/Graphics/CircleShape.hpp"
+#include "SFML/Graphics/RenderTarget.hpp"
 
 namespace Serum2D::Core::Components {
-    ShapeComponent::ShapeComponent(ShapeType shapeType) : shapeType(shapeType) {
+    ShapeComponent::ShapeComponent(const ShapeType shapeType) : shapeType(shapeType) {
         setShape(shapeType);
     }
 
-    void ShapeComponent::draw(sf::RenderTarget &target, sf::RenderStates states) const {
+    void ShapeComponent::draw(sf::RenderTarget &target, const sf::RenderStates states) const {
         target.draw(*shape, states);
     }
 
-    void ShapeComponent::setShape(ShapeType newShapeType) {
+    void ShapeComponent::setShape(const ShapeType newShapeType) {
         shapeType = newShapeType;
         std::unique_ptr<sf::Shape> newShape = nullptr;
 

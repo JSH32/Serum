@@ -1,6 +1,6 @@
 #pragma once
 
 #include <cmrc/cmrc.hpp>
-CMRC_DECLARE(resources);
+CMRC_DECLARE(Resources);
 
-void* getFileAsBuffer(cmrc::file& file);
+void* getFileAsBuffer(const cmrc::file& file);

@@ -1,16 +1,15 @@
 #pragma once
 
 #include "Serum/scene.h"
-#include "imgui.h"
 #include "imgui-SFML.h"
 #include "Serum/entity.h"
 #include "sceneview.h"
 
 namespace Serum2D::Editor {
-    class SceneHierarchyPanel : public EditorPanel {
+    class SceneHierarchyPanel final : public EditorPanel {
     public:
         SceneHierarchyPanel(Core::Scene& scene, SceneViewPanel* sceneViewPanel, Core::Entity& selectedEntity)
-            : scene(scene), sceneViewPanel(sceneViewPanel), selectedEntity(selectedEntity) {};
+            : scene(scene), selectedEntity(selectedEntity), sceneViewPanel(sceneViewPanel) {}
 
         void onEvent(sf::Event event) override;
         void onUpdate() override;
@@ -18,7 +17,7 @@ namespace Serum2D::Editor {
         Core::Scene& scene;
         Core::Entity& selectedEntity;
     private:
-        void drawEntity(Core::Entity entity);
+        void drawEntity(Core::Entity entity) const;
         SceneViewPanel* sceneViewPanel;
     };
 }

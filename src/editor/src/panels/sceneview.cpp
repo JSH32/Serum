@@ -1,20 +1,22 @@
-#include <iostream>
 #include "sceneview.h"
 #include "SFML/Graphics/CircleShape.hpp"
 #include "icons.h"
+#include "imgui_utils.h"
 #include "Serum/components/shape.h"
-#include "Serum/math_utils.h"
+#include "Serum/mathutils.h"
+#include "Thor/Shapes/Arrow.hpp"
+#include "imgui-SFML.h"
 
 namespace Serum2D::Editor {
     SceneViewPanel::SceneViewPanel(Core::Scene* scene, Core::Entity& selectedEntity)
-        : scene(scene), selectedEntity(selectedEntity) {
+        : selectedEntity(selectedEntity), scene(scene) {
         gridLineY.setFillColor(sf::Color::Green);
         gridLineX.setFillColor(sf::Color::Red);
         renderTexture.setView(sceneView);
     }
 
     void SceneViewPanel::drawGridLines() {
-        auto relativeViewCoords = renderTexture.mapPixelToCoords(sf::Vector2i(0.f, 0.f), sceneView);
+	    const auto relativeViewCoords = renderTexture.mapPixelToCoords(sf::Vector2i(0.f, 0.f), sceneView);
         gridLineY.setPosition(sf::Vector2f(relativeViewCoords.x, 0));
         gridLineY.setSize(sf::Vector2f(sceneView.getSize().x, 2));
         renderTexture.draw(gridLineY);
@@ -36,55 +38,16 @@ namespace Serum2D::Editor {
         windowContentArea = ImGui::GetContentArea();
 
         // Resize RenderTexture based on the size of the ImGui window
-        float windowWidth = ImGui::GetContentRegionAvail().x;
-        float windowHeight = ImGui::GetContentRegionAvail().y;
-        if ((unsigned int)windowWidth != renderTexture.getSize().x || (unsigned int)windowHeight != renderTexture.getSize().y) {
-            renderTexture.create((unsigned int)windowWidth, (unsigned int)windowHeight);
-            sceneView.setSize(windowWidth, windowHeight);
+        const ImVec2 windowSize = ImGui::GetContentRegionAvail();
+        if ((unsigned int)windowSize.x != renderTexture.getSize().x || (unsigned int)windowSize.y != renderTexture.getSize().y) {
+            renderTexture.create((unsigned int)windowSize.x, (unsigned int)windowSize.y);
+            sceneView.setSize(windowSize.x, windowSize.y);
             renderTexture.setView(sceneView);
         }
 
         if (selectedEntity && selectedEntity.hasComponent<sf::Transformable>()) {
-            auto& transform = selectedEntity.getComponent<sf::Transformable>();
-
-            thor::Arrow xArrow;
-            xArrow.setColor(sf::Color::Red);
-            xArrow.setDirection(100 * zoom, 0);
-            xArrow.setThickness(7 * zoom);
-            xArrow.setColor(sf::Color::Red);
-            xArrow.setPosition(transform.getPosition());
-            renderTexture.draw(xArrow);
-
-            xGizmoBounding = sf::FloatRect(sf::Vector2f(transform.getPosition().x, transform.getPosition().y - xArrow.getThickness()),
-                                           sf::Vector2f(100 * zoom, 14 * zoom));
-
-            thor::Arrow yArrow;
-            yArrow.setColor(sf::Color::Green);
-            yArrow.setDirection(0, 100 * zoom);
-            yArrow.setThickness(7 * zoom);
-            yArrow.setColor(sf::Color::Green);
-            yArrow.setPosition(transform.getPosition());
-            renderTexture.draw(yArrow);
-
-            yGizmoBounding = sf::FloatRect(sf::Vector2f(transform.getPosition().x - xArrow.getThickness(), transform.getPosition().y),
-                                           sf::Vector2f(14 * zoom, 100 * zoom));
-
-            sf::CircleShape center;
-            center.setFillColor(sf::Color::Blue);
-            center.setRadius(10 * zoom);
-            center.setPosition(transform.getPosition());
-            center.setOrigin(sf::Vector2f(center.getRadius(), center.getRadius()));
-
-            sf::RectangleShape globalDrag;
-            globalDrag.setFillColor(sf::Color(0, 0, 255, 100));
-            globalDrag.setSize(sf::Vector2f(50 * zoom, 50 * zoom));
-            globalDrag.setOrigin(globalDrag.getOrigin().x + 3.5f * zoom, globalDrag.getOrigin().y + 3.5f * zoom);
-            globalDrag.setPosition(transform.getPosition());
-
-            anyBounding = globalDrag.getGlobalBounds();
-
-            renderTexture.draw(center);
-            renderTexture.draw(globalDrag);
+            if (transformType == TransformType::Position)
+                updateTransformPositionGizmo(selectedEntity.getComponent<sf::Transformable>());
         }
 
         ImGui::Image(sf::Sprite(renderTexture.getTexture()));
@@ -93,22 +56,63 @@ namespace Serum2D::Editor {
         ImGui::PopStyleVar();
     }
 
-    void SceneViewPanel::onEvent(sf::Event event) {
+    void SceneViewPanel::updateTransformPositionGizmo(const sf::Transformable& transform) {
+		thor::Arrow xArrow;
+		xArrow.setColor(sf::Color::Red);
+		xArrow.setDirection(100 * zoom, 0);
+		xArrow.setThickness(7 * zoom);
+		xArrow.setPosition(transform.getPosition());
+		renderTexture.draw(xArrow);
+
+		xGizmoBounding = sf::FloatRect(sf::Vector2f(transform.getPosition().x, transform.getPosition().y - xArrow.getThickness()),
+		                               sf::Vector2f(100 * zoom, 14 * zoom));
+
+		thor::Arrow yArrow;
+		yArrow.setColor(sf::Color::Green);
+		yArrow.setDirection(0, 100 * zoom);
+		yArrow.setThickness(7 * zoom);
+		yArrow.setPosition(transform.getPosition());
+		renderTexture.draw(yArrow);
+
+		yGizmoBounding = sf::FloatRect(sf::Vector2f(transform.getPosition().x - xArrow.getThickness(), transform.getPosition().y),
+		                               sf::Vector2f(14 * zoom, 100 * zoom));
+
+		sf::CircleShape center;
+		center.setFillColor(sf::Color::Blue);
+		center.setRadius(10 * zoom);
+		center.setPosition(transform.getPosition());
+		center.setOrigin(sf::Vector2f(center.getRadius(), center.getRadius()));
+
+		sf::RectangleShape globalDrag;
+		globalDrag.setFillColor(sf::Color(0, 0, 255, 100));
+		globalDrag.setSize(sf::Vector2f(50 * zoom, 50 * zoom));
+		globalDrag.setOrigin(globalDrag.getOrigin().x + 3.5f * zoom, globalDrag.getOrigin().y + 3.5f * zoom);
+		globalDrag.setPosition(transform.getPosition());
+
+		anyBounding = globalDrag.getGlobalBounds();
+
+		renderTexture.draw(center);
+		renderTexture.draw(globalDrag);
+    }
+
+    void SceneViewPanel::onEvent(const sf::Event event) {
         if (event.type == sf::Event::MouseButtonPressed) {
             if (event.mouseButton.button == 0 && !panning) {
-                auto originalMousePos = sf::Vector2i(event.mouseButton.x, event.mouseButton.y);
+	            const auto originalMousePos = sf::Vector2i(event.mouseButton.x, event.mouseButton.y);
 
                 auto [windowTopCorner, windowBottomCorner] = windowContentArea;
 
                 // Get a bounding rect of the window content area
-                auto windowBounds = sf::FloatRect(sf::Vector2f(windowTopCorner.x, windowTopCorner.y),
-                                                    sf::Vector2f(windowBottomCorner.x - windowTopCorner.x, windowBottomCorner.y - windowTopCorner.y));
+	            const auto windowBounds = sf::FloatRect(sf::Vector2f(windowTopCorner.x, windowTopCorner.y),
+	                                                    sf::Vector2f(windowBottomCorner.x - windowTopCorner.x, windowBottomCorner.y - windowTopCorner.y));
 
                 // Ignore if click was outside the window
                 if (!windowBounds.contains((float)originalMousePos.x, (float)originalMousePos.y))
                     return;
 
-                auto mouseCoords = ImGui::CalculateImOffset(renderTexture, originalMousePos, std::get<0>(windowContentArea));
+	            const auto mouseCoords = ImGui::CalculateImOffset(
+		            renderTexture, originalMousePos, std::get<0>(windowContentArea));
+
                 if (selectedEntity) {
                     if (xGizmoBounding.contains(mouseCoords)) {
                         transforming = true;
@@ -128,20 +132,20 @@ namespace Serum2D::Editor {
                 } else {
                     bool entityClicked = false;
 
-                    scene->registry.each([&](auto entityID) {
+                    scene->registry.each([&](auto entityId) {
                         if (entityClicked) return;
-                        Core::Entity entity = { entityID, scene };
-                        if (!scene->registry.all_of<sf::Transformable, Core::Components::ShapeComponent>(entityID))
+                        Core::Entity entity = { entityId, scene };
+                        if (!scene->registry.all_of<sf::Transformable, Core::Components::ShapeComponent>(entityId))
                             return;
 
-                        auto& transform = entity.getComponent<sf::Transformable>();
-                        auto& shape = entity.getComponent<Core::Components::ShapeComponent>();
+                        const auto& transform = entity.getComponent<sf::Transformable>();
+                        const auto& shape = entity.getComponent<Core::Components::ShapeComponent>();
 
                         std::vector<sf::Vector2f> points(shape.shape->getPointCount());
                         for (int i = 0; i < shape.shape->getPointCount(); i++) {
                             sf::Transformable shapeTransform(transform);
                             shapeTransform.setOrigin(shape.shape->getOrigin());
-                            auto point = shapeTransform.getTransform().transformPoint(shape.shape->getPoint(i));
+                            const auto point = shapeTransform.getTransform().transformPoint(shape.shape->getPoint(i));
                             points[i] = point;
                         }
 
