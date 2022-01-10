@@ -5,7 +5,7 @@
 #include "Serum/components/shape.h"
 #include "imgui_utils.h"
 
-#include "icons.h"
+#include "fontawesome5.h"
 #include "SFML/Graphics/CircleShape.hpp"
 
 namespace Serum2D::Editor {

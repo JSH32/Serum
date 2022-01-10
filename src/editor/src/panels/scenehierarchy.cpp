@@ -4,7 +4,7 @@
 #include "Serum/components/entityinfo.h"
 #include "SFML/Graphics/Transformable.hpp"
 #include "SFML/Window/Event.hpp"
-#include "icons.h"
+#include "fontawesome5.h"
 
 
 namespace Serum2D::Editor {

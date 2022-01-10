@@ -12,7 +12,7 @@ file(GLOB_RECURSE SRC
 add_executable(editor ${SRC})
 
 target_link_libraries(editor PRIVATE serum)
-target_include_directories(editor PRIVATE ${SOURCE_DIR})
+target_include_directories(editor PRIVATE ${SOURCE_DIR} ${VENDOR_DIR}/fontIcons)
 
 # CmakeRC
 include(${VENDOR_DIR}/cmrc/CMakeRC.cmake)

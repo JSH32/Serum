@@ -1,6 +1,6 @@
 #include "sceneview.h"
 #include "SFML/Graphics/CircleShape.hpp"
-#include "icons.h"
+#include "fontawesome5.h"
 #include "imgui_utils.h"
 #include "Serum/components/shape.h"
 #include "Serum/mathutils.h"

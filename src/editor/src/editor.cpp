@@ -5,7 +5,7 @@
 #include "panels/inspector.h"
 #include "Serum/components/shape.h"
 #include "resources.h"
-#include "icons.h"
+#include "fontawesome5.h"
 #include "Serum/log.h"
 
 namespace Serum2D::Editor {
