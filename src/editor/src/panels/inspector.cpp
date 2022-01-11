@@ -3,7 +3,7 @@
 #include "imgui_internal.h"
 #include "Serum/components/entityinfo.h"
 #include "Serum/components/shape.h"
-#include "imgui_utils.h"
+#include "imguiutils.h"
 
 #include "fontawesome5.h"
 #include "SFML/Graphics/CircleShape.hpp"

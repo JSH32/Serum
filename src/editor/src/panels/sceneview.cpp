@@ -1,7 +1,7 @@
 #include "sceneview.h"
 #include "SFML/Graphics/CircleShape.hpp"
 #include "fontawesome5.h"
-#include "imgui_utils.h"
+#include "imguiutils.h"
 #include "Serum/components/shape.h"
 #include "Serum/mathutils.h"
 #include "Thor/Shapes/Arrow.hpp"
@@ -48,6 +48,8 @@ namespace Serum2D::Editor {
         if (selectedEntity && selectedEntity.hasComponent<sf::Transformable>()) {
             if (transformType == TransformType::Position)
                 updateTransformPositionGizmo(selectedEntity.getComponent<sf::Transformable>());
+            else if (transformType == TransformType::Scale)
+                updateTransformScaleGizmo(selectedEntity.getComponent<sf::Transformable>());
         }
 
         ImGui::Image(sf::Sprite(renderTexture.getTexture()));
@@ -58,7 +60,7 @@ namespace Serum2D::Editor {
 
     void SceneViewPanel::updateTransformPositionGizmo(const sf::Transformable& transform) {
 		thor::Arrow xArrow;
-		xArrow.setColor(sf::Color::Red);
+		xArrow.setColor(widgetRed);
 		xArrow.setDirection(100 * zoom, 0);
 		xArrow.setThickness(7 * zoom);
 		xArrow.setPosition(transform.getPosition());
@@ -68,23 +70,23 @@ namespace Serum2D::Editor {
 		                               sf::Vector2f(100 * zoom, 14 * zoom));
 
 		thor::Arrow yArrow;
-		yArrow.setColor(sf::Color::Green);
+		yArrow.setColor(widgetGreen);
 		yArrow.setDirection(0, 100 * zoom);
 		yArrow.setThickness(7 * zoom);
 		yArrow.setPosition(transform.getPosition());
 		renderTexture.draw(yArrow);
 
-		yGizmoBounding = sf::FloatRect(sf::Vector2f(transform.getPosition().x - xArrow.getThickness(), transform.getPosition().y),
+		yGizmoBounding = sf::FloatRect(sf::Vector2f(transform.getPosition().x - yArrow.getThickness(), transform.getPosition().y),
 		                               sf::Vector2f(14 * zoom, 100 * zoom));
 
 		sf::CircleShape center;
-		center.setFillColor(sf::Color::Blue);
+		center.setFillColor(widgetBlue);
 		center.setRadius(10 * zoom);
 		center.setPosition(transform.getPosition());
 		center.setOrigin(sf::Vector2f(center.getRadius(), center.getRadius()));
 
 		sf::RectangleShape globalDrag;
-		globalDrag.setFillColor(sf::Color(0, 0, 255, 100));
+		globalDrag.setFillColor(sf::Color(widgetBlue.r, widgetBlue.g, widgetBlue.b, 100));
 		globalDrag.setSize(sf::Vector2f(50 * zoom, 50 * zoom));
 		globalDrag.setOrigin(globalDrag.getOrigin().x + 3.5f * zoom, globalDrag.getOrigin().y + 3.5f * zoom);
 		globalDrag.setPosition(transform.getPosition());
@@ -93,6 +95,50 @@ namespace Serum2D::Editor {
 
 		renderTexture.draw(center);
 		renderTexture.draw(globalDrag);
+    }
+
+    void SceneViewPanel::updateTransformScaleGizmo(const sf::Transformable& transform) {
+        sf::RectangleShape yShape;
+        yShape.setFillColor(sf::Color::Green);
+        yShape.setSize(sf::Vector2f(7 * zoom, 80 * zoom));
+        yShape.setPosition(transform.getPosition());
+        yShape.setOrigin(sf::Vector2f(yShape.getOrigin().x + 3.5f * zoom, yShape.getOrigin().y));
+        renderTexture.draw(yShape);
+
+        sf::RectangleShape ySquare;
+        ySquare.setFillColor(sf::Color::Green);
+        ySquare.setSize(sf::Vector2f(20 * zoom, 20 * zoom));
+    	ySquare.setOrigin(sf::Vector2f(ySquare.getOrigin().x + 10.f * zoom, ySquare.getOrigin().y));
+        ySquare.setPosition(sf::Vector2f(transform.getPosition().x, transform.getPosition().y + 80 * zoom));
+        renderTexture.draw(ySquare);
+
+        yGizmoBounding = sf::FloatRect(sf::Vector2f(transform.getPosition().x - 10, transform.getPosition().y),
+                               sf::Vector2f(20 * zoom, 100 * zoom));
+
+    	sf::RectangleShape xShape;
+        xShape.setFillColor(sf::Color::Red);
+        xShape.setSize(sf::Vector2f(80 * zoom, 7 * zoom));
+        xShape.setPosition(transform.getPosition());
+        xShape.setOrigin(sf::Vector2f(xShape.getOrigin().x, xShape.getOrigin().y + 3.5f * zoom));
+        renderTexture.draw(xShape);
+
+    	sf::RectangleShape xSquare;
+        xSquare.setFillColor(sf::Color::Red);
+        xSquare.setSize(sf::Vector2f(20 * zoom, 20 * zoom));
+    	xSquare.setOrigin(sf::Vector2f(xSquare.getOrigin().x, xSquare.getOrigin().y + 10.f * zoom));
+        xSquare.setPosition(sf::Vector2f(transform.getPosition().x + 80 * zoom, transform.getPosition().y));
+        renderTexture.draw(xSquare);
+
+        xGizmoBounding = sf::FloatRect(sf::Vector2f(transform.getPosition().x, transform.getPosition().y - 10),
+                       sf::Vector2f(100 * zoom, 20 * zoom));
+
+        // Center square, scale entire shape
+        sf::RectangleShape centerScale;
+        centerScale.setPosition(transform.getPosition());
+        centerScale.setFillColor(sf::Color(128, 128, 128, 255));
+        centerScale.setSize((sf::Vector2f(25 * zoom, 25 * zoom)));
+        centerScale.setOrigin(centerScale.getSize().x / 2.f, centerScale.getSize().y / 2.f);
+        renderTexture.draw(centerScale);
     }
 
     void SceneViewPanel::onEvent(const sf::Event event) {

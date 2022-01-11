@@ -23,10 +23,14 @@ namespace Serum2D::Editor {
         void drawGridLines();
 
         /**
-         * Update current data relating to position in transform
-         * This will also render the position gizmo
+         * Draw the position gizmo
          */
         void updateTransformPositionGizmo(const sf::Transformable& transform);
+
+        /**
+         * Draw the scale gizmo
+         */
+        void updateTransformScaleGizmo(const sf::Transformable& transform);
 
         float zoom = 1; // Zoom
         bool panning = false; // Is currently panning camera
@@ -64,6 +68,10 @@ namespace Serum2D::Editor {
 
         Core::Entity& selectedEntity;
         Core::Scene* scene;
+
+        const inline static sf::Color widgetGreen = sf::Color(206, 255, 189, 255);
+        const inline static sf::Color widgetRed = sf::Color(255, 86, 92, 255);
+        const inline static sf::Color widgetBlue = sf::Color(88, 87, 255, 255);
 
         friend SceneHierarchyPanel;
     };
