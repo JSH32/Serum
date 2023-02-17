@@ -1,5 +1,7 @@
-cmake-build-debug
-build
-.idea
-out
-.vs
+# Xmake cache
+.xmake/
+build/
+CMakeLists.txt
+
+# MacOS Cache
+.DS_Store
