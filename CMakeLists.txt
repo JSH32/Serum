@@ -190,6 +190,7 @@ target_sources(serum2d PRIVATE
     core/src/log.cpp
     core/src/scene.cpp
     core/src/entity.cpp
+    core/src/window.cpp
 )
 
 # target
